@@ -104,6 +104,8 @@ namespace DHCPServer
             t = new Thread(new ThreadStart(time));
             t.Start();
             button1.Enabled = false;
+            t.IsBackground = true;
+            t1.IsBackground = true;
         }
 
         void send(DHCPPacket d)

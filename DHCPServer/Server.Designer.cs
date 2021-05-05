@@ -83,16 +83,16 @@
             // columnHeader1
             // 
             this.columnHeader1.Text = "MacAddr";
-            this.columnHeader1.Width = 104;
+            this.columnHeader1.Width = 97;
             // 
             // columnHeader2
             // 
             this.columnHeader2.Text = "IpAddr";
-            this.columnHeader2.Width = 128;
+            this.columnHeader2.Width = 85;
             // 
             // columnHeader3
             // 
-            this.columnHeader3.Text = "Time";
+            this.columnHeader3.Text = "Time(refresh after 5s)";
             this.columnHeader3.Width = 204;
             // 
             // button1
