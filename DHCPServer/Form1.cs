@@ -30,20 +30,19 @@ namespace DHCPServer
 
         List<item> table;
         UdpClient udpclient;
+        Thread t, t1;
+        DHCPPacket d;
 
-        void running()
-        {            
+        void listening()
+        {
+            udpclient = new UdpClient(68);
             while (true)
-            {
-                udpclient = new UdpClient(68);
+            {                
                 IPEndPoint IpEnd = new IPEndPoint(IPAddress.Any, 0);
                 Byte[] recvBytes = udpclient.Receive(ref IpEnd);
-                udpclient.Close();
-                DHCPPacket d = new DHCPPacket();
                 d.BytesToDHCPPacket(recvBytes);
-                solve(d);
-                display(d);
-                udpclient = new UdpClient(68);
+                display();
+                solve();
             }
         }
 
@@ -77,33 +76,42 @@ namespace DHCPServer
             }
         }
 
-        void solve(DHCPPacket d)
+        void solve()
         {
             // Xu li goi tin dhcp
         }
 
         void sendack()
         {
-
+            // send dhcp ack
         }
 
         void sendoffer()
         {
-
+            // send dhcp offer
         }
 
-        void display(DHCPPacket d)
+        void display()
         {
             // Hien thi goi tin dhcp vua nhan duoc len man hinh
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
-            table = new List<item>();            
-            Thread t = new Thread(new ThreadStart(time));
-            t.Start();
-            Thread t1 = new Thread(new ThreadStart(running));
+            d = new DHCPPacket();
+            table = new List<item>();
+            t1 = new Thread(new ThreadStart(listening));
             t1.Start();
+            t = new Thread(new ThreadStart(time));
+            t.Start();
+            button1.Enabled = false;
         }
+
+        void send(DHCPPacket d)
+        {
+            byte[] send = d.DHCPPacketToBytes();
+            udpclient.Send(send, send.Length);
+        }
+
     }
 }
