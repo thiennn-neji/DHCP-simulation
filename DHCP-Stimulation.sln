@@ -7,11 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DHCPServer", "DHCPServer\DH
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DHCPPacket", "DHCPPacket\DHCPPacket.csproj", "{4A5325AA-3A04-4816-B177-19C5A58D5A14}"
 EndProject
-<<<<<<< HEAD
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DHCPClient", "DHCPClient\DHCPClient.csproj", "{271DC768-8BC5-4F32-8D44-51B12B19D79E}"
-=======
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DHCP Client", "DHCP Client\DHCP Client.csproj", "{271DC768-8BC5-4F32-8D44-51B12B19D79E}"
->>>>>>> parent of 015fcef (DHCP 12:19 6/5)
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
