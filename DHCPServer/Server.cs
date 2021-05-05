@@ -108,8 +108,10 @@ namespace DHCPServer
 
         void send(DHCPPacket d)
         {
+            IPAddress ipadd = IPAddress.Parse("255.255.255.255");
+            IPEndPoint ipend = new IPEndPoint(ipadd, 67);
             byte[] send = d.DHCPPacketToBytes();
-            udpclient.Send(send, send.Length);
+            udpclient.Send(send, send.Length, ipend);
         }
 
     }

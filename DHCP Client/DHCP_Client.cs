@@ -18,14 +18,19 @@ namespace DHCPClient
         public DHCP_Client()
         {
             InitializeComponent();
+            ip = IPAddress.Parse("0.0.0.0");
+            defaultgateway = IPAddress.Parse("0.0.0.0");
+            subnetmask = IPAddress.Parse("255.255.255.255");
         }
 
         IPAddress ip; // Ip hien co cua client
         IPAddress defaultgateway; // default gateway cua client
         IPAddress subnetmask; // subneskmask hien co cua client
+        UdpClient udpclient;
 
         private void btnRenew_Click(object sender, EventArgs e)
         {
+            rtbMess.Text = "";
             sendrelease(); // gui dhcp relesase
             SendDiscover();  // gui dhcp discover   
             UdpClient udpclient = new UdpClient(67); // mo port 67 va cho doi dhcp offer
@@ -42,13 +47,7 @@ namespace DHCPClient
             d = new DHCPPacket(); // chuyen doi goi dhcp ack
             display1(d); // hien thi thong tin goi dhcp vua nhan duoc
             display2(); // Cap nhat dia chi ip moi va hien thi
-        }
-
-        void sendrelease()
-        {
-            // send dhcp release
-            display2();
-        }
+        }        
 
         void display1(DHCPPacket d)
         {
@@ -58,12 +57,14 @@ namespace DHCPClient
         void display2()
         {
             rtbPara.Text = "Ip address: " + ip.ToString() + "\r\n";
-            rtbPara.Text += "Default Gateway: " + ip.ToString() + "\r\n";
-            rtbPara.Text += "Subnet Mask: " + ip.ToString() + "\r\n";
+            rtbPara.Text += "Default Gateway: " + defaultgateway.ToString() + "\r\n";
+            rtbPara.Text += "Subnet Mask: " + subnetmask.ToString() + "\r\n";
         }
         private void btnRelease_Click(object sender, EventArgs e)
         {
+            rtbMess.Text = "";
             sendrelease();
+            display2();
         }
 
         void SendDiscover()
@@ -74,6 +75,18 @@ namespace DHCPClient
         void sendrequest(IPAddress ip)
         {
             // send dhcp request
+        }
+        void sendrelease()
+        {
+            // send dhcp release
+
+        }
+        void send(DHCPPacket d)
+        {
+            IPAddress ipadd = IPAddress.Parse("255.255.255.255");
+            IPEndPoint ipend = new IPEndPoint(ipadd, 67);
+            byte[] send = d.DHCPPacketToBytes();
+            udpclient.Send(send, send.Length, ipend);
         }
 
     }
