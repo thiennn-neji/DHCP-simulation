@@ -80,7 +80,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\..\UNKNOWN\CS\NT106-DHCP-Stimulation\DHCPPacket\DHCPPacket.csproj">
+    <ProjectReference Include="..\DHCPPacket\DHCPPacket.csproj">
       <Project>{4a5325aa-3a04-4816-b177-19c5a58d5a14}</Project>
       <Name>DHCPPacket</Name>
     </ProjectReference>
