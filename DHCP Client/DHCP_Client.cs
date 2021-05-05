@@ -75,7 +75,6 @@ namespace DHCPClient
 
         private void btnRenew_Click(object sender, EventArgs e)
         {
-            rtbMess.Text = "";
             sendrelease();
             SendDiscover();
         }
@@ -88,6 +87,7 @@ namespace DHCPClient
         void display1(DHCPPacket d)
         {
             // Display dhcp messeage
+            rtbMess.Text += d.ToText() + "\r\n";
         }
 
         void display2()
@@ -102,7 +102,6 @@ namespace DHCPClient
         }
         private void btnRelease_Click(object sender, EventArgs e)
         {
-            rtbMess.Text = "";
             sendrelease();
         }
 

@@ -94,6 +94,7 @@ namespace DHCPServer
         void display(DHCPPacket d)
         {
             // Hien thi goi tin dhcp vua nhan duoc len man hinh
+            richTextBox1.Text += d.ToText() + "\r\n";
         }
 
         private void button1_Click(object sender, EventArgs e)

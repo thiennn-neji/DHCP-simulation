@@ -235,6 +235,13 @@ namespace DHCPPacketNamespace
             }
 			return returnValue;
 		}
+
+		public string ToText()
+        {
+			string text = "";
+			// Chuyen sang text de hien thi
+			return text;
+        }
 	}
 
 	public enum ARPparamEnums
