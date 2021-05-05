@@ -39,99 +39,104 @@ namespace DHCPPacket
 				   |                          options (variable)                   |
 				   +---------------------------------------------------------------+
 	*/
+	public struct DHCPpacket
+    {
+		/// <summary> 
+		/// <para>Octet: 1</para>
+		/// <para>Message op code / message type.</para>
+		/// <para>1 = BOOTREQUEST, 2 = BOOTREPLY</para>
+		/// </summary>
+		public byte op;
 
-	public class DHCPPacket
-	{
-		private byte[1] op;
-		private byte[1] htype;
-		private byte[1] hlen;
-		private byte[1] hops;
-		private byte[4] xid;
-		private byte[2] secs;
-		private byte[2] flags;
-		private byte[4] ciaddr;
-		private byte[4] yiaddr;
-		private byte[4] siaddr;
-		private byte[4] giaddr;
-		private byte[16] chaddr;
-		private byte[64] sname;
-		private byte[128] file;
-		private List<byte> options;
+		/// <summary>
+		/// <para>Octet: 1</para>
+		/// <para>Hardware address type. Eg: 1 = 10MB ethernet</para>
+		/// <para>See ARPparamEnums</para>
+		/// </summary>
+		public byte htype;
 
-		public string Op
-		{
-			get { return Encoding.UTF8.GetString(op);}
-			set { op = Encoding.UTF8.GetBytes(value); }
-		}
-		public string Htype
-        {
-            get { return Encoding.UTF8.GetString(htype); }
-			set { htype = Encoding.UTF8.GetBytes(value); }
-        }
-		public string Hlen
-		{
-			get { return Encoding.UTF8.GetString(hlen); }
-			set { hlen = Encoding.UTF8.GetBytes(value); }
-		}
-		public string Hops
-		{
-			get { return Encoding.UTF8.GetString(hops); }
-			set { hops = Encoding.UTF8.GetBytes(value); }
-		}
-		public string Xid
-		{
-			get { return Encoding.UTF8.GetString(xid); }
-			set { xid = Encoding.UTF8.GetBytes(value); }
-		}
-		public string Secs
-		{
-			get { return Encoding.UTF8.GetString(secs); }
-			set { secs = Encoding.UTF8.GetBytes(value); }
-		}
-		public string Flags
-		{
-			get { return Encoding.UTF8.GetString(flags); }
-			set { flags = Encoding.UTF8.GetBytes(value); }
-		}
-		public string Ciaddr
-		{
-			get { return Encoding.UTF8.GetString(ciaddr); }
-			set { ciaddr = Encoding.UTF8.GetBytes(value); }
-		}
-		public string Yiaddr
-		{
-			get { return Encoding.UTF8.GetString(yiaddr); }
-			set { yiaddr = Encoding.UTF8.GetBytes(value); }
-		}
-		public string Siaddr
-		{
-			get { return Encoding.UTF8.GetString(siaddr); }
-			set { siaddr = Encoding.UTF8.GetBytes(value); }
-		}
-		public string Giaddr
-		{
-			get { return Encoding.UTF8.GetString(giaddr); }
-			set { giaddr = Encoding.UTF8.GetBytes(value); }
-		}
-		public string Chaddr
-		{
-			get { return Encoding.UTF8.GetString(chaddr); }
-			set { chaddr = Encoding.UTF8.GetBytes(value); }
-		}
-		public string Sname
-		{
-			get { return Encoding.UTF8.GetString(sname); }
-			set { sname = Encoding.UTF8.GetBytes(value); }
-		}
-		public string File
-		{
-			get { return Encoding.UTF8.GetString(file); }
-			set { file = Encoding.UTF8.GetBytes(value); }
-		}
-		public string Options
-		{
-			get { return Encoding.UTF8.GetString(options); }
-			set { options = Encoding.UTF8.GetBytes(value); }
-		}
+		/// <summary>
+		/// <para>Octet: 1</para>
+		/// <para>Hardware address length. Eg: length of MACID</para>
+		/// <para>See HardwareAddLengthEnums</para>
+		/// </summary>
+		public byte hlen;
+
+		/// <summary>
+		/// <para>Octet: 1</para>
+		/// <para>Client sets to zero, optionally used by relay agents when booting via a relay agent.</para>
+		/// </summary>
+		public byte hops;
+
+		/// <summary>
+		/// <para>Octet: 4</para>
+		/// <para>Transaction ID, a random number chosen by the client, used by the client and server to associate messages and responses between a client and a server.</para>
+		/// </summary>
+		public byte[] xid;
+
+		/// <summary>
+		/// <para>Octet: 2</para>
+		/// <para>Filled in by client, seconds elapsed since client began address acquisition or renewal process</para>
+		/// <para>On the other way, elapsed time from trying to boot</para>
+		/// </summary>
+		public byte[] secs;
+
+		/// <summary>
+		/// <para>Octet: 2</para>
+		/// <para>Flags</para>
+		/// </summary>
+		public byte[] flags;
+
+		/// <summary>
+		/// <para>Octet: 4</para>
+		/// <para>Client IP address; only filled in if client is in BOUND, RENEW or REBINDING state and can respond	to ARP requests</para>
+		/// <para>Client IP</para>
+		/// </summary>
+		public byte[] ciaddr;
+
+		/// <summary>
+		/// <para>Octet: 4</para>
+		/// <para>'your' (client) IP address.</para>
+		/// <para>Your client IP</para>
+		/// </summary>
+		public byte[] yiaddr;
+
+		/// <summary>
+		/// <para>Octet: 4</para>
+		/// <para>IP address of next server to use in bootstrap; returned in DHCPOFFER, DHCPACK by server.</para>
+		/// <para>Server IP</para>
+		/// </summary>
+		public byte[] siaddr;
+
+		/// <summary>
+		/// <para>Octet: 4</para>
+		/// <para>Relay agent IP address, used in booting via a	relay agent.</para>
+		/// <para>Relay agent IP</para>
+		/// </summary>
+		public byte[] giaddr;
+
+		/// <summary>
+		/// <para>Octet: 16</para>
+		/// <para>Client hardware address</para>
+		/// </summary>
+		public byte[] chaddr;
+
+		/// <summary>
+		/// <para>Octet: 64</para>
+		/// <para>Optional server host name, null terminated string</para>
+		/// </summary>
+		public byte[] sname;
+
+		/// <summary>
+		/// <para>Octet: 128</para>
+		/// <para>Boot file name, null terminated string; "generic"	name or null in DHCPDISCOVER, fully qualified</para>
+		/// </summary>
+		public byte[] file;
+
+		/// <summary>
+		/// <para>Octet: var</para>
+		/// <para>Optional parameters field.  See the options documents for a list of defined options.</para>
+		/// </summary>
+		public byte[] options;
 	}
 }
