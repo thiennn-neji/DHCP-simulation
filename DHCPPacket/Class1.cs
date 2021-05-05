@@ -58,80 +58,80 @@ namespace DHCPPacket
 		private byte[128] file;
 		private List<byte> options;
 
-		public string Op
+		public byte Op
 		{
-			get { return Encoding.UTF8.GetString(op);}
-			set { op = Encoding.UTF8.GetBytes(value); }
+			get { return op;}
+			set { op = value; }
 		}
-		public string Htype
+		public byte Htype
         {
-            get { return Encoding.UTF8.GetString(htype); }
-			set { htype = Encoding.UTF8.GetBytes(value); }
+            get { return htype; }
+			set { htype = value; }
         }
-		public string Hlen
+		public byte Hlen
 		{
-			get { return Encoding.UTF8.GetString(hlen); }
-			set { hlen = Encoding.UTF8.GetBytes(value); }
+			get { return hlen; }
+			set { hlen = value; }
 		}
-		public string Hops
+		public byte Hops
 		{
-			get { return Encoding.UTF8.GetString(hops); }
-			set { hops = Encoding.UTF8.GetBytes(value); }
+			get { return hops; }
+			set { hops = value; }
 		}
-		public string Xid
+		public byte Xid
 		{
-			get { return Encoding.UTF8.GetString(xid); }
-			set { xid = Encoding.UTF8.GetBytes(value); }
+			get { return xid; }
+			set { xid = value; }
 		}
-		public string Secs
+		public byte Secs
 		{
-			get { return Encoding.UTF8.GetString(secs); }
-			set { secs = Encoding.UTF8.GetBytes(value); }
+			get { return secs; }
+			set { secs = value; }
 		}
-		public string Flags
+		public byte Flags
 		{
-			get { return Encoding.UTF8.GetString(flags); }
-			set { flags = Encoding.UTF8.GetBytes(value); }
+			get { return flags; }
+			set { flags = value; }
 		}
-		public string Ciaddr
+		public byte Ciaddr
 		{
-			get { return Encoding.UTF8.GetString(ciaddr); }
-			set { ciaddr = Encoding.UTF8.GetBytes(value); }
+			get { return ciaddr; }
+			set { ciaddr = value; }
 		}
-		public string Yiaddr
+		public byte Yiaddr
 		{
-			get { return Encoding.UTF8.GetString(yiaddr); }
-			set { yiaddr = Encoding.UTF8.GetBytes(value); }
+			get { return yiaddr; }
+			set { yiaddr = value; }
 		}
-		public string Siaddr
+		public byte Siaddr
 		{
-			get { return Encoding.UTF8.GetString(siaddr); }
-			set { siaddr = Encoding.UTF8.GetBytes(value); }
+			get { return siaddr; }
+			set { siaddr = value; }
 		}
-		public string Giaddr
+		public byte Giaddr
 		{
-			get { return Encoding.UTF8.GetString(giaddr); }
-			set { giaddr = Encoding.UTF8.GetBytes(value); }
+			get { return giaddr; }
+			set { giaddr = value; }
 		}
-		public string Chaddr
+		public byte Chaddr
 		{
-			get { return Encoding.UTF8.GetString(chaddr); }
-			set { chaddr = Encoding.UTF8.GetBytes(value); }
+			get { return chaddr; }
+			set { chaddr = value; }
 		}
-		public string Sname
+		public byte Sname
 		{
-			get { return Encoding.UTF8.GetString(sname); }
-			set { sname = Encoding.UTF8.GetBytes(value); }
+			get { return sname; }
+			set { sname = value; }
 		}
-		public string File
+		public byte File
 		{
-			get { return Encoding.UTF8.GetString(file); }
-			set { file = Encoding.UTF8.GetBytes(value); }
+			get { return file; }
+			set { file = value; }
 		}
-		public string Options
+		public byte Options
 		{
-			get { return Encoding.UTF8.GetString(options); }
-			set { options = Encoding.UTF8.GetBytes(value); }
+			get { return options; }
+			set { options = value; }
 		}
 	}
 }
