@@ -8,11 +8,11 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace DHCPClient
+namespace DHCPStimulate
 {
-    public partial class Form1 : Form
+    public partial class DHCPClient : Form
     {
-        public Form1()
+        public DHCPClient()
         {
             InitializeComponent();
         }
