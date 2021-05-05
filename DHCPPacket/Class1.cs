@@ -39,99 +39,104 @@ namespace DHCPPacket
 				   |                          options (variable)                   |
 				   +---------------------------------------------------------------+
 	*/
+	public struct DHCPpacket
+    {
+		/// <summary> 
+		/// <para>Octet: 1</para>
+		/// <para>Message op code / message type.</para>
+		/// <para>1 = BOOTREQUEST, 2 = BOOTREPLY</para>
+		/// </summary>
+		public byte op;
 
-	public class DHCPPacket
-	{
-		private byte[1] op;
-		private byte[1] htype;
-		private byte[1] hlen;
-		private byte[1] hops;
-		private byte[4] xid;
-		private byte[2] secs;
-		private byte[2] flags;
-		private byte[4] ciaddr;
-		private byte[4] yiaddr;
-		private byte[4] siaddr;
-		private byte[4] giaddr;
-		private byte[16] chaddr;
-		private byte[64] sname;
-		private byte[128] file;
-		private List<byte> options;
+		/// <summary>
+		/// <para>Octet: 1</para>
+		/// <para>Hardware address type. Eg: 1 = 10MB ethernet</para>
+		/// <para>See ARPparamEnums</para>
+		/// </summary>
+		public byte htype;
 
-		public byte Op
-		{
-			get { return op;}
-			set { op = value; }
-		}
-		public byte Htype
-        {
-            get { return htype; }
-			set { htype = value; }
-        }
-		public byte Hlen
-		{
-			get { return hlen; }
-			set { hlen = value; }
-		}
-		public byte Hops
-		{
-			get { return hops; }
-			set { hops = value; }
-		}
-		public byte Xid
-		{
-			get { return xid; }
-			set { xid = value; }
-		}
-		public byte Secs
-		{
-			get { return secs; }
-			set { secs = value; }
-		}
-		public byte Flags
-		{
-			get { return flags; }
-			set { flags = value; }
-		}
-		public byte Ciaddr
-		{
-			get { return ciaddr; }
-			set { ciaddr = value; }
-		}
-		public byte Yiaddr
-		{
-			get { return yiaddr; }
-			set { yiaddr = value; }
-		}
-		public byte Siaddr
-		{
-			get { return siaddr; }
-			set { siaddr = value; }
-		}
-		public byte Giaddr
-		{
-			get { return giaddr; }
-			set { giaddr = value; }
-		}
-		public byte Chaddr
-		{
-			get { return chaddr; }
-			set { chaddr = value; }
-		}
-		public byte Sname
-		{
-			get { return sname; }
-			set { sname = value; }
-		}
-		public byte File
-		{
-			get { return file; }
-			set { file = value; }
-		}
-		public byte Options
-		{
-			get { return options; }
-			set { options = value; }
-		}
+		/// <summary>
+		/// <para>Octet: 1</para>
+		/// <para>Hardware address length. Eg: length of MACID</para>
+		/// <para>See HardwareAddLengthEnums</para>
+		/// </summary>
+		public byte hlen;
+
+		/// <summary>
+		/// <para>Octet: 1</para>
+		/// <para>Client sets to zero, optionally used by relay agents when booting via a relay agent.</para>
+		/// </summary>
+		public byte hops;
+
+		/// <summary>
+		/// <para>Octet: 4</para>
+		/// <para>Transaction ID, a random number chosen by the client, used by the client and server to associate messages and responses between a client and a server.</para>
+		/// </summary>
+		public byte[] xid;
+
+		/// <summary>
+		/// <para>Octet: 2</para>
+		/// <para>Filled in by client, seconds elapsed since client began address acquisition or renewal process</para>
+		/// <para>On the other way, elapsed time from trying to boot</para>
+		/// </summary>
+		public byte[] secs;
+
+		/// <summary>
+		/// <para>Octet: 2</para>
+		/// <para>Flags</para>
+		/// </summary>
+		public byte[] flags;
+
+		/// <summary>
+		/// <para>Octet: 4</para>
+		/// <para>Client IP address; only filled in if client is in BOUND, RENEW or REBINDING state and can respond	to ARP requests</para>
+		/// <para>Client IP</para>
+		/// </summary>
+		public byte[] ciaddr;
+
+		/// <summary>
+		/// <para>Octet: 4</para>
+		/// <para>'your' (client) IP address.</para>
+		/// <para>Your client IP</para>
+		/// </summary>
+		public byte[] yiaddr;
+
+		/// <summary>
+		/// <para>Octet: 4</para>
+		/// <para>IP address of next server to use in bootstrap; returned in DHCPOFFER, DHCPACK by server.</para>
+		/// <para>Server IP</para>
+		/// </summary>
+		public byte[] siaddr;
+
+		/// <summary>
+		/// <para>Octet: 4</para>
+		/// <para>Relay agent IP address, used in booting via a	relay agent.</para>
+		/// <para>Relay agent IP</para>
+		/// </summary>
+		public byte[] giaddr;
+
+		/// <summary>
+		/// <para>Octet: 16</para>
+		/// <para>Client hardware address</para>
+		/// </summary>
+		public byte[] chaddr;
+
+		/// <summary>
+		/// <para>Octet: 64</para>
+		/// <para>Optional server host name, null terminated string</para>
+		/// </summary>
+		public byte[] sname;
+
+		/// <summary>
+		/// <para>Octet: 128</para>
+		/// <para>Boot file name, null terminated string; "generic"	name or null in DHCPDISCOVER, fully qualified</para>
+		/// </summary>
+		public byte[] file;
+
+		/// <summary>
+		/// <para>Octet: var</para>
+		/// <para>Optional parameters field.  See the options documents for a list of defined options.</para>
+		/// </summary>
+		public byte[] options;
 	}
 }
