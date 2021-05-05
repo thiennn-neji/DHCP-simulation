@@ -84,6 +84,16 @@ namespace DHCPServer
             // Xu li goi tin dhcp
         }
 
+        void sendack()
+        {
+
+        }
+
+        void sendoffer()
+        {
+
+        }
+
         void display(DHCPpacket d)
         {
             // Hien thi goi tin dhcp vua nhan duoc len man hinh
