@@ -142,9 +142,8 @@ namespace DHCPPacketNamespace
 
 		public bool BytesToDHCPPacket (byte[] data)
         {
-			System.IO.BinaryReader rdr;
 			System.IO.MemoryStream stm = new System.IO.MemoryStream(data, 0, data.Length);
-
+			System.IO.BinaryReader rdr = new System.IO.BinaryReader(stm);
 			try
 			{   
 				//read data
@@ -232,8 +231,9 @@ namespace DHCPPacketNamespace
             }
             finally
             {
-				return null;
+				returnValue = null;
             }
+			return returnValue;
 		}
 	}
 
