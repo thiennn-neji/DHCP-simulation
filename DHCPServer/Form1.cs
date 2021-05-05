@@ -19,7 +19,6 @@ namespace DHCPServer
         public Server()
         {
             InitializeComponent();
-            running();
         }
 
         public class item
@@ -30,15 +29,13 @@ namespace DHCPServer
         }
 
         List<item> table;
+        UdpClient udpclient;
 
         void running()
-        {
-            table = new List<item>();
-            UdpClient udpclient = new UdpClient(68);
-            Thread t = new Thread(new ThreadStart(time));
-            t.Start();
+        {            
             while (true)
             {
+                udpclient = new UdpClient(68);
                 IPEndPoint IpEnd = new IPEndPoint(IPAddress.Any, 0);
                 Byte[] recvBytes = udpclient.Receive(ref IpEnd);
                 udpclient.Close();
@@ -98,6 +95,15 @@ namespace DHCPServer
         void display(DHCPPacket d)
         {
             // Hien thi goi tin dhcp vua nhan duoc len man hinh
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            table = new List<item>();            
+            Thread t = new Thread(new ThreadStart(time));
+            t.Start();
+            Thread t1 = new Thread(new ThreadStart(running));
+            t1.Start();
         }
     }
 }
