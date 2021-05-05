@@ -3,31 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30804.86
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DHCPServer", "DHCPServer\DHCPServer.csproj", "{83EA2B69-5785-4B7A-AEFD-95CBFC7235E3}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DHCPPacket", "DHCPPacket\DHCPPacket.csproj", "{4A5325AA-3A04-4816-B177-19C5A58D5A14}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DHCPClient", "DHCPClient\DHCPClient.csproj", "{271DC768-8BC5-4F32-8D44-51B12B19D79E}"
-EndProject
 Global
-	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		Debug|Any CPU = Debug|Any CPU
-		Release|Any CPU = Release|Any CPU
-	EndGlobalSection
-	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{83EA2B69-5785-4B7A-AEFD-95CBFC7235E3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{83EA2B69-5785-4B7A-AEFD-95CBFC7235E3}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{83EA2B69-5785-4B7A-AEFD-95CBFC7235E3}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{83EA2B69-5785-4B7A-AEFD-95CBFC7235E3}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4A5325AA-3A04-4816-B177-19C5A58D5A14}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4A5325AA-3A04-4816-B177-19C5A58D5A14}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4A5325AA-3A04-4816-B177-19C5A58D5A14}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4A5325AA-3A04-4816-B177-19C5A58D5A14}.Release|Any CPU.Build.0 = Release|Any CPU
-		{271DC768-8BC5-4F32-8D44-51B12B19D79E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{271DC768-8BC5-4F32-8D44-51B12B19D79E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{271DC768-8BC5-4F32-8D44-51B12B19D79E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{271DC768-8BC5-4F32-8D44-51B12B19D79E}.Release|Any CPU.Build.0 = Release|Any CPU
-	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
