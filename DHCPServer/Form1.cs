@@ -10,7 +10,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using DHCPPacket;
+using DHCPPacketNamespace;
 
 namespace DHCPServer
 {
@@ -42,7 +42,8 @@ namespace DHCPServer
                 IPEndPoint IpEnd = new IPEndPoint(IPAddress.Any, 0);
                 Byte[] recvBytes = udpclient.Receive(ref IpEnd);
                 udpclient.Close();
-                DHCPpacket d = new DHCPpacket();
+                DHCPPacket d = new DHCPPacket();
+                d.BytesToDHCPPacket(recvBytes);
                 solve(d);
                 display(d);
                 udpclient = new UdpClient(68);
@@ -79,7 +80,7 @@ namespace DHCPServer
             }
         }
 
-        void solve(DHCPpacket d)
+        void solve(DHCPPacket d)
         {
             // Xu li goi tin dhcp
         }
@@ -94,7 +95,7 @@ namespace DHCPServer
 
         }
 
-        void display(DHCPpacket d)
+        void display(DHCPPacket d)
         {
             // Hien thi goi tin dhcp vua nhan duoc len man hinh
         }

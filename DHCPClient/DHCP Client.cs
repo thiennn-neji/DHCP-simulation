@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Net;
 using System.Net.Sockets;
-using DHCPPacket;
+using DHCPPacketNamespace;
 
 namespace DHCPClient
 {
@@ -32,14 +32,14 @@ namespace DHCPClient
             IPEndPoint IpEnd = new IPEndPoint(IPAddress.Any, 0);
             Byte[] recvBytes = udpclient.Receive(ref IpEnd);
             udpclient.Close();
-            DHCPpacket d = new DHCPpacket(); // chuyen doi dhcp offer o dang byte thanh cau truc dhcp packet
+            DHCPPacket d = new DHCPPacket(); // chuyen doi dhcp offer o dang byte thanh cau truc dhcp packet
             display1(d); // hien thi thong tin goi dhcp vua nhan duoc
             sendrequest(new IPAddress(d.yiaddr)); // gui dhcp request
 
             udpclient = new UdpClient(67); // doi nhan dhcp ack
             recvBytes = udpclient.Receive(ref IpEnd);
             udpclient.Close();
-            d = new DHCPpacket(); // chuyen doi goi dhcp ack
+            d = new DHCPPacket(); // chuyen doi goi dhcp ack
             display1(d); // hien thi thong tin goi dhcp vua nhan duoc
             display2(); // Cap nhat dia chi ip moi va hien thi
         }        
@@ -50,7 +50,7 @@ namespace DHCPClient
             display2();
         }
 
-        void display1(DHCPpacket d)
+        void display1(DHCPPacket d)
         {
             // Display dhcp messeage
         }
