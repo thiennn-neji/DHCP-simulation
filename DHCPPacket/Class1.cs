@@ -4,8 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DHCPPacket
+namespace DHCPPacketNamespace
 {
+
 	/*
 				   0                   1                   2                   3
 				   0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
@@ -39,7 +40,7 @@ namespace DHCPPacket
 				   |                          options (variable)                   |
 				   +---------------------------------------------------------------+
 	*/
-	public struct DHCPpacket
+	public class DHCPPacket
     {
 		/// <summary> 
 		/// <para>Octet: 1</para>
@@ -138,5 +139,273 @@ namespace DHCPPacket
 		/// <para>Optional parameters field.  See the options documents for a list of defined options.</para>
 		/// </summary>
 		public byte[] options;
+
+		public bool BytesToDHCPPacket (byte[] data)
+        {
+			System.IO.BinaryReader rdr;
+			System.IO.MemoryStream stm = new System.IO.MemoryStream(data, 0, data.Length);
+
+			try
+			{   
+				//read data
+				this.op = rdr.ReadByte();
+				this.htype = rdr.ReadByte();
+				this.hlen = rdr.ReadByte();
+				this.hops = rdr.ReadByte();
+				this.xid = rdr.ReadBytes(4);
+				this.secs = rdr.ReadBytes(2);
+				this.flags = rdr.ReadBytes(2);
+				this.ciaddr = rdr.ReadBytes(4);
+				this.yiaddr = rdr.ReadBytes(4);
+				this.siaddr = rdr.ReadBytes(4);
+				this.giaddr = rdr.ReadBytes(4);
+				this.chaddr = rdr.ReadBytes(16);
+				this.sname = rdr.ReadBytes(64);
+				this.file = rdr.ReadBytes(128);
+				//read the rest of the data, which shall determine the dhcp
+
+				//options
+				byte temp;
+				do
+                {
+					temp = rdr.ReadByte();
+					this.options.Append<byte>(temp);
+                } while ((int)temp != 255);
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine(ex.Message);
+				return false;
+			}
+			return true;
+		}
+
+		private void AddOptionElement(byte[] FromValue, ref byte[] TargetArray)
+		{
+			try
+			{
+				//resize the array accoringly
+
+				if (TargetArray != null)
+					Array.Resize(ref TargetArray,
+					   TargetArray.Length + FromValue.Length);
+				else
+					Array.Resize(ref TargetArray, FromValue.Length);
+				//copy the data over
+
+				Array.Copy(FromValue, 0, TargetArray,
+					TargetArray.Length - FromValue.Length,
+					FromValue.Length);
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine(ex.Message);
+			}
+		}
+		public byte[] DHCPPacketToBytes()
+        {
+			byte[] returnValue;
+
+			try
+			{
+				returnValue = new byte[0];
+				AddOptionElement(new byte[] { this.op }, ref returnValue);
+				AddOptionElement(new byte[] { this.htype }, ref returnValue);
+				AddOptionElement(new byte[] { this.hlen }, ref returnValue);
+				AddOptionElement(new byte[] { this.hops }, ref returnValue);
+				AddOptionElement(this.xid, ref returnValue);
+				AddOptionElement(this.secs, ref returnValue);
+				AddOptionElement(this.flags, ref returnValue);
+				AddOptionElement(this.ciaddr, ref returnValue);
+				AddOptionElement(this.yiaddr, ref returnValue);
+				AddOptionElement(this.siaddr, ref returnValue);
+				AddOptionElement(this.giaddr, ref returnValue);
+				AddOptionElement(this.chaddr, ref returnValue);
+				AddOptionElement(this.sname, ref returnValue);
+				AddOptionElement(this.file, ref returnValue);
+				AddOptionElement(this.options, ref returnValue);
+				return returnValue;
+			}
+            catch (Exception ex)
+            {
+				Console.WriteLine(ex.Message);
+            }
+            finally
+            {
+				return null;
+            }
+		}
+	}
+
+	public enum ARPparamEnums
+    {
+		/**
+					 Hardware Type (hrd)
+
+			  Type   Description                                 
+			  ----   -----------                                  
+				1    Ethernet (10Mb)                                    
+				2    Experimental Ethernet (3Mb)                        
+				3    Amateur Radio AX.25                                
+				4    Proteon ProNET Token Ring                          
+				5    Chaos                                              
+				6    IEEE 802 Networks                                  
+				7    ARCNET                                             
+				8    Hyperchannel                                       
+				9    Lanstar                                             
+			   10    Autonet Short Address                             
+			   11    LocalTalk                                          
+			   12    LocalNet (IBM PCNet or SYTEK LocalNET)             
+		*/
+		IEEE_8023_Ethernet = 1,
+		ExperimentalEthernet = 2,
+		AmateurRadioAX25 = 3,
+		ProteonProNETTokenRing = 4,
+		Chaos = 5,
+		IEEE_802_Networks = 6,
+		ARCNET = 7,
+		Hyperchannel = 8,
+		Lanstar = 9,
+		AutonetShortAddress = 10,
+		LocalTalk = 11,
+		LocalNet_IBMPCNet_or_SYTEKLocalNET = 12
+	}
+
+	public enum HardwareAddLengthEnums
+    {
+		DIX_Ethernet = 6,
+		IEEE_8023_Ethernet = 6,
+		IEEE_8025_TokenRing = 6,
+		ARCNET = 1,
+		FDDI = 6,
+		FrameRelay2 = 2,
+		FrameRelay3 = 3,
+		FrameRelay4 = 4,
+		SMDS = 8
+	}
+	
+	public enum DHCPOptionEnums
+    {
+		SubnetMask = 1,
+		TimeOffset = 2,
+		Router = 3,
+		TimeServer = 4,
+		NameServer = 5,
+		DomainNameServer = 6,
+		LogServer = 7,
+		CookieServer = 8,
+		LPRServer = 9,
+		ImpressServer = 10,
+		ResourceLocServer = 11,
+		HostName = 12,
+		BootFileSize = 13,
+		MeritDump = 14,
+		DomainName = 15,
+		SwapServer = 16,
+		RootPath = 17,
+		ExtensionsPath = 18,
+		IpForwarding = 19,
+		NonLocalSourceRouting = 20,
+		PolicyFilter = 21,
+		MaximumDatagramReAssemblySize = 22,
+		DefaultIPTimeToLive = 23,
+		PathMTUAgingTimeout = 24,
+		PathMTUPlateauTable = 25,
+		InterfaceMTU = 26,
+		AllSubnetsAreLocal = 27,
+		BroadcastAddress = 28,
+		PerformMaskDiscovery = 29,
+		MaskSupplier = 30,
+		PerformRouterDiscovery = 31,
+		RouterSolicitationAddress = 32,
+		StaticRoute = 33,
+		TrailerEncapsulation = 34,
+		ARPCacheTimeout = 35,
+		EthernetEncapsulation = 36,
+		TCPDefaultTTL = 37,
+		TCPKeepaliveInterval = 38,
+		TCPKeepaliveGarbage = 39,
+		NetworkInformationServiceDomain = 40,
+		NetworkInformationServers = 41,
+		NetworkTimeProtocolServers = 42,
+		VendorSpecificInformation = 43,
+		NetBIOSoverTCPIPNameServer = 44,
+		NetBIOSoverTCPIPDatagramDistributionServer = 45,
+		NetBIOSoverTCPIPNodeType = 46,
+		NetBIOSoverTCPIPScope = 47,
+		XWindowSystemFontServer = 48,
+		XWindowSystemDisplayManager = 49,
+		RequestedIPAddress = 50,
+		IPAddressLeaseTime = 51,
+		OptionOverload = 52,
+		DHCPMessageTYPE = 53,
+		ServerIdentifier = 54,
+		ParameterRequestList = 55,
+		Message = 56,
+		MaximumDHCPMessageSize = 57,
+		RenewalTimeValue_T1 = 58,
+		RebindingTimeValue_T2 = 59,
+		Vendorclassidentifier = 60,
+		ClientIdentifier = 61,
+		NetworkInformationServicePlusDomain = 64,
+		NetworkInformationServicePlusServers = 65,
+		TFTPServerName = 66,
+		BootfileName = 67,
+		MobileIPHomeAgent = 68,
+		SMTPServer = 69,
+		POP3Server = 70,
+		NNTPServer = 71,
+		DefaultWWWServer = 72,
+		DefaultFingerServer = 73,
+		DefaultIRCServer = 74,
+		StreetTalkServer = 75,
+		STDAServer = 76,
+		END_Option = 255
+	}
+
+	/// <summary>
+	/// <para>Message types as defined by the RFC</para>
+	/// </summary>
+	public enum DHCPMsgType
+	{
+		/// <summary>
+		/// <para>A client broadcasts to locate servers</para>
+		/// </summary>
+		DHCPDISCOVER = 1,
+
+		/// <summary>
+		/// <para>A server offers an IP address to the device</para>
+		/// </summary>
+		DHCPOFFER = 2,
+
+		/// <summary>
+		/// <para>Client accepts offers from DHCP server</para>
+		/// </summary>
+		DHCPREQUEST = 3,
+
+		/// <summary>
+		/// <para>Client declines the offer from this DHCP server</para>
+		/// </summary>
+		DHCPDECLINE = 4,
+
+		/// <summary>
+		/// <para>Server to client + committed IP address</para>
+		/// </summary>
+		DHCPACK = 5,
+
+		/// <summary>
+		/// <para>Server to client to state net address incorrect</para>
+		/// </summary>
+		DHCPNAK = 6,
+
+		/// <summary>
+		/// <para>Graceful shutdown from client to Server</para>
+		/// </summary>
+		DHCPRELEASE = 7,
+
+		/// <summary>
+		/// <para>Client to server asking for local info</para>
+		/// </summary>
+		DHCPINFORM = 8
 	}
 }
