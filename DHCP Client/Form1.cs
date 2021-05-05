@@ -42,7 +42,7 @@ namespace DHCPClient
             d = new DHCPPacket(); // chuyen doi goi dhcp ack
             display1(d); // hien thi thong tin goi dhcp vua nhan duoc
             display2(); // Cap nhat dia chi ip moi va hien thi
-        }        
+        }
 
         void sendrelease()
         {

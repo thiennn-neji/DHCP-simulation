@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("DHCPClient")]
+[assembly: AssemblyTitle("DHCP Client")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("DHCPClient")]
+[assembly: AssemblyProduct("DHCP Client")]
 [assembly: AssemblyCopyright("Copyright ©  2021")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("7057952f-c418-46ad-a8bf-dddfc57f3c0d")]
+[assembly: Guid("271dc768-8bc5-4f32-8d44-51b12b19d79e")]
 
 // Version information for an assembly consists of the following four values:
 //
