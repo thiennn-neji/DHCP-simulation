@@ -43,7 +43,7 @@ namespace DHCPClient
             this.btnRenew.Name = "btnRenew";
             this.btnRenew.Size = new System.Drawing.Size(157, 73);
             this.btnRenew.TabIndex = 0;
-            this.btnRenew.Text = "New / Renew";
+            this.btnRenew.Text = "New ";
             this.btnRenew.UseVisualStyleBackColor = true;
             this.btnRenew.Click += new System.EventHandler(this.btnRenew_Click);
             // 

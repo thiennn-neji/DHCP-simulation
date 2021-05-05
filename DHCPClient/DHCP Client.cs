@@ -7,6 +7,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Net;
+using System.Net.Sockets;
 
 namespace DHCPClient
 {
@@ -17,9 +19,14 @@ namespace DHCPClient
             InitializeComponent();
         }
 
+        void SendDiscover()
+        {
+            UdpClient client = new UdpClient();
+            byte[] mess = UTF8Encoding.UTF8.GetBytes("need ")
+        }
+
         private void btnRenew_Click(object sender, EventArgs e)
         {
-
         }
 
         private void btnRelease_Click(object sender, EventArgs e)
