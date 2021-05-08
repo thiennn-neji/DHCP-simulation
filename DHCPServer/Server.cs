@@ -81,18 +81,12 @@ namespace DHCPServer
             // Xu li goi tin dhcp
         }
 
-        void sendack()
+        void sendack(DHCPPacket e, IPAddress z)
         {
             // send dhcp ack
-            
-        }
-
-        void sendoffer(DHCPPacket e, IPAddress z) // take dhcp discover and allocated ip and send offer packet
-        {
-            // send dhcp offer
             DHCPPacket d = new DHCPPacket();
             d.Init();
-            d.op = 1;
+            d.op = 2;
             d.htype = 1;
             d.hlen = 6;
             d.hops = 0;
@@ -101,7 +95,46 @@ namespace DHCPServer
                 d.xid[i] = e.xid[i];
             }
 
-            d.flags[0] = 1;
+            d.yiaddr = z.GetAddressBytes();
+
+            for (int i = 0; i < e.chaddr.Length; i++)
+            {
+                d.chaddr[i] = e.chaddr[i];
+            }
+
+            option f = new option();
+
+            f.add(new byte[] { 99, 139, 83, 99 }); // add dhcp magic option
+            f.add(new byte[] { 53, 1, 2 }); // add messeage type dhcp offer
+            f.add(new byte[] { 54, 4, 192, 168, 1, 1 }); // add dhcp server identify
+            f.add(new byte[] { 51, 4, 0, 0, 0, 120 }); // add ip lease time (120 s)
+            f.add(new byte[] { 1, 4, 255, 255, 255, 0 }); // add subnetmask
+            f.add(new byte[] { 3, 4, 192, 168, 1, 1 }); // add defualt gateway
+            f.add(new byte[] { 6, 4, 192, 168, 1, 1 }); // add dns server
+            f.add(new byte[] { 255 }); // add end
+
+            d.options = new byte[f.size];
+            for (int i = 0; i < f.size; i++)
+            {
+                d.options[i] = f.data[i];
+            }
+            //
+            send(d);
+        }
+
+        void sendoffer(DHCPPacket e, IPAddress z) // take dhcp discover and allocated ip and send offer packet
+        {
+            // send dhcp offer
+            DHCPPacket d = new DHCPPacket();
+            d.Init();
+            d.op = 2;
+            d.htype = 1;
+            d.hlen = 6;
+            d.hops = 0;
+            for (int i = 0; i < e.xid.Length; i++)
+            {
+                d.xid[i] = e.xid[i];
+            }
 
             d.yiaddr = z.GetAddressBytes();
 

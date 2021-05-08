@@ -257,6 +257,27 @@ namespace DHCPPacketNamespace
 			text += "op(1): " + op.ToString("X") + " htype(1): " + htype.ToString("X") + "op(1): " + op.ToString("X") + "op(1): " + op.ToString("X") + "\r\n";
 			return text;
 		}
+
+		public List<byte[]> optionsplit()
+        {
+			List<byte[]> ret = new List<byte[]>();
+			for (int i = 4; i < options.Length; i++)
+            {
+				if (options[i] == 255)
+                {
+					break;
+                }
+				int size = options[i + 1];
+				byte[] tmp = new byte[size + 2];
+				for (int j = 0; j < i + size; j++)
+                {
+					tmp[j] = options[i + j];
+                }
+				i += (size - 1);
+				ret.Add(tmp);
+            }
+			return ret;
+        }
 	}
 
 	public enum ARPparamEnums
