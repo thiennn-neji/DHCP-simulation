@@ -257,7 +257,7 @@ namespace DHCPPacketNamespace
 		{
 			string text = "";
 			// Chuyen sang text de hien thi
-			text += "op(1): " + op.ToString("X") + " htype(1): " + htype.ToString("X") + "op(1): " + op.ToString("X") + "op(1): " + op.ToString("X") + "\r\n";
+			text += "op(1): " + op.ToString("X") + " htype(1): " + htype.ToString("X") + " hlen(1): " +hlen.ToString("X") + " hops(1): " + hops.ToString("X") + "\r\n";
 			text += "xid(4): " + ByteArrayToString(xid) + "\r\n";
 			text += "secs(2): " + ByteArrayToString(secs) + "\r\n";
 			text += "flags(2): " + ByteArrayToString(flags) + "\r\n";

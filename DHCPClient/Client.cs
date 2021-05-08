@@ -24,8 +24,10 @@ namespace DHCPClient
             defaultgateway = IPAddress.Parse("0.0.0.0");
             dns = IPAddress.Parse("0.0.0.0");
             subnetmask = IPAddress.Parse("255.255.255.255");
-            CheckForIllegalCrossThreadCalls = false;          
-            
+            CheckForIllegalCrossThreadCalls = false;
+
+            udpclient = new UdpClient(6700);
+
             t = new Thread(new ThreadStart(listening));
             t.IsBackground = true;
             t.Start();
@@ -67,19 +69,19 @@ namespace DHCPClient
                 if (haveip)
                 {
                     Int64 epoch = (int)(DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalSeconds;
-                    if (time - epoch <= 30000)
+                    if (time - epoch <= 45)
                     {
+                        MessageBox.Show((time - epoch).ToString());
                         // viet ham
                         sendrequest_Renew(dhcpserver);
                     }
                 }
-                Thread.Sleep(30000);
+                Thread.Sleep(5000);
             }
         }
 
         void listening()
-        {
-            udpclient = new UdpClient(67);
+        {            
             while (true)
             {
                 IPEndPoint IpEnd = new IPEndPoint(IPAddress.Any, 0);
@@ -126,6 +128,7 @@ namespace DHCPClient
                             }
                         }
                         sendrequest(d, dhcpserver);
+                        //MessageBox.Show("DHCPOffer");
                     } 
                     else
                     {
@@ -147,7 +150,7 @@ namespace DHCPClient
                             if (o[j][0] == 51)
                             {
                                 Int64 epoch = (int)(DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalSeconds;
-                                time = epoch + BitConverter.ToInt32(new byte[] { o[j][2], o[j][3], o[j][4], o[j][5] }, 0); ;
+                                time = epoch + BitConverter.ToInt32(new byte[] { o[j][5], o[j][4], o[j][3], o[j][2] }, 0);
                             }
                         }
                         haveip = true;
@@ -165,14 +168,17 @@ namespace DHCPClient
 
         void display2()
         {
-            Int64 epoch = (int)(DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalSeconds;
-            rtbPara.Text = "Ip address: " + ip.ToString() + "\r\n";
-            rtbPara.Text += "Default Gateway: " + defaultgateway.ToString() + "\r\n";
-            rtbPara.Text += "Subnet Mask: " + subnetmask.ToString() + "\r\n";
-            rtbPara.Text += "Dns server: " + dns.ToString() + "\r\n";
-            rtbPara.Text += "Time remaining: " + Math.Max(time - epoch, 0).ToString() + "s\r\n";
-            rtbPara.Text += "Refresh after 5s\r\n";
-            Thread.Sleep(5000);
+            while (true)
+            {
+                Int64 epoch = (int)(DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalSeconds;
+                rtbPara.Text = "Ip address: " + ip.ToString() + "\r\n";
+                rtbPara.Text += "Default Gateway: " + defaultgateway.ToString() + "\r\n";
+                rtbPara.Text += "Subnet Mask: " + subnetmask.ToString() + "\r\n";
+                rtbPara.Text += "Dns server: " + dns.ToString() + "\r\n";
+                rtbPara.Text += "Time remaining: " + Math.Max(time - epoch, 0).ToString() + "s\r\n";
+                rtbPara.Text += "Refresh after 5s\r\n";
+                Thread.Sleep(5000);
+            }
         }
         private void btnRelease_Click(object sender, EventArgs e)
         {
@@ -360,10 +366,10 @@ namespace DHCPClient
         void send(DHCPPacket d)
         {
             IPAddress ipadd = IPAddress.Parse("255.255.255.255");
-            IPEndPoint ipend = new IPEndPoint(ipadd, 68);
+            IPEndPoint ipend = new IPEndPoint(ipadd, 6800);
             byte[] send = d.DHCPPacketToBytes();
             udpclient.Send(send, send.Length, ipend);
-            MessageBox.Show(ByteArrayToString(send));
+            //MessageBox.Show(ByteArrayToString(send));
         }
 
     }

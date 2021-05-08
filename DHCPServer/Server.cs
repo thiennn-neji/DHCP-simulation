@@ -38,12 +38,8 @@ namespace DHCPServer
             {
                 IPEndPoint IpEnd = new IPEndPoint(IPAddress.Any, 0);
                 Byte[] recvBytes = udpclient.Receive(ref IpEnd);
-                //MessageBox.Show(ByteArrayToString(recvBytes));
                 DHCPPacket d = new DHCPPacket();
-                d.BytesToDHCPPacket(recvBytes);                
-                //MessageBox.Show(ByteArrayToString(d.chaddr));
-                //MessageBox.Show(ByteArrayToString(d.xid));
-                //MessageBox.Show(ByteArrayToString(d.options));
+                d.BytesToDHCPPacket(recvBytes);
                 display(d);
                 solve(d);
             }
@@ -126,15 +122,15 @@ namespace DHCPServer
                             }
                         }
                     }
-                    else if (o[1][2] == 3)
+                    else if (o[i][2] == 3)
                     {
                         IPAddress g;
-                        g = new IPAddress(d.yiaddr);
-                        if (!d.yiaddr.SequenceEqual(new byte[] { 0, 0, 0, 0 }))
+                        g = new IPAddress(d.ciaddr);
+                        if (d.ciaddr.SequenceEqual(new byte[] { 0, 0, 0, 0 }))
                         {
                             for (int j = 0; j < o.Count(); j++)
                             {
-                                if (o[i][0] == 50)
+                                if (o[j][0] == 50)
                                 {
                                     g = new IPAddress(new byte[] { o[j][2], o[j][3], o[j][4], o[j][5] });
                                     break;
@@ -146,12 +142,26 @@ namespace DHCPServer
                         {
                             Mc[j] = d.chaddr[j];
                         }
-                        string mc = ByteArrayToString(Mc);
+                        string mc = ByteArrayToString(Mc);                          
+                        
                         item q = new item();
                         q.macaddress = mc;
                         q.ip = g.ToString();
                         Int64 epoch = (int)(DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalSeconds;
                         q.time = epoch + 120;
+                        for (int j = 0; j < table.Count(); j++)
+                        {
+                            if (table[j].ip == q.ip)
+                            {
+                                if (table[j].macaddress == q.macaddress)
+                                {
+                                    table.RemoveAt(j);
+                                } else
+                                {
+                                    // send NAK T^T coming soon
+                                }
+                            }
+                        }
                         table.Add(q);
                         sendack(d, g);
                     }
@@ -289,7 +299,7 @@ namespace DHCPServer
         private void button1_Click(object sender, EventArgs e)
         {
             table = new List<item>();
-            udpclient = new UdpClient(68);
+            udpclient = new UdpClient(6800);
             CheckForIllegalCrossThreadCalls = false;
             t1 = new Thread(new ThreadStart(listening));
             t = new Thread(new ThreadStart(time));
@@ -297,8 +307,7 @@ namespace DHCPServer
             t1.IsBackground = true;
             t1.Start();            
             t.Start();
-            button1.Enabled = false;
-                       
+            button1.Enabled = false;                       
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -309,7 +318,7 @@ namespace DHCPServer
         void send(DHCPPacket d)
         {
             IPAddress ipadd = IPAddress.Parse("255.255.255.255");
-            IPEndPoint ipend = new IPEndPoint(ipadd, 67);
+            IPEndPoint ipend = new IPEndPoint(ipadd, 6700);
             byte[] send = d.DHCPPacketToBytes();
             udpclient.Send(send, send.Length, ipend);
         }
