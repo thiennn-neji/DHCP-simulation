@@ -301,6 +301,11 @@ namespace DHCPServer
                        
         }
 
+        private void button2_Click(object sender, EventArgs e)
+        {
+            richTextBox1.Text = "";
+        }
+
         void send(DHCPPacket d)
         {
             IPAddress ipadd = IPAddress.Parse("255.255.255.255");

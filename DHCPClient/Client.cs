@@ -312,6 +312,12 @@ namespace DHCPClient
             //
             send(d);
         }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            rtbMess.Text = "";
+        }
+
         void sendrelease()
         {
             // send dhcp release          

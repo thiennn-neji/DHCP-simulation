@@ -245,12 +245,30 @@ namespace DHCPPacketNamespace
 			}
 			return returnValue;
 		}
+		public static string ByteArrayToString(byte[] ba)
+		{
+			StringBuilder hex = new StringBuilder(ba.Length * 2);
+			foreach (byte b in ba)
+				hex.AppendFormat("{0:x2}", b);
+			return hex.ToString();
+		}
 
 		public string ToText()
 		{
 			string text = "";
 			// Chuyen sang text de hien thi
 			text += "op(1): " + op.ToString("X") + " htype(1): " + htype.ToString("X") + "op(1): " + op.ToString("X") + "op(1): " + op.ToString("X") + "\r\n";
+			text += "xid(4): " + ByteArrayToString(xid) + "\r\n";
+			text += "secs(2): " + ByteArrayToString(secs) + "\r\n";
+			text += "flags(2): " + ByteArrayToString(flags) + "\r\n";
+			text += "ciaddr(4): " + ByteArrayToString(ciaddr) + "\r\n";
+			text += "yiaddr(4): " + ByteArrayToString(yiaddr) + "\r\n";
+			text += "siaddr(4): " + ByteArrayToString(siaddr) + "\r\n";
+			text += "giaddr(4): " + ByteArrayToString(giaddr) + "\r\n";
+			text += "chaddr(16): " + ByteArrayToString(chaddr) + "\r\n";
+			text += "sname(64): " + ByteArrayToString(sname) + "\r\n";
+			text += "file(128): " + ByteArrayToString(file) + "\r\n";
+			text += "options(): " + ByteArrayToString(options) + "\r\n";
 			return text;
 		}
 
