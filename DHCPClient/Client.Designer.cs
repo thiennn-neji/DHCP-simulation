@@ -40,7 +40,7 @@ namespace DHCPClient
             // 
             // btnRenew
             // 
-            this.btnRenew.Location = new System.Drawing.Point(521, 12);
+            this.btnRenew.Location = new System.Drawing.Point(784, 12);
             this.btnRenew.Name = "btnRenew";
             this.btnRenew.Size = new System.Drawing.Size(157, 73);
             this.btnRenew.TabIndex = 0;
@@ -50,7 +50,7 @@ namespace DHCPClient
             // 
             // btnRelease
             // 
-            this.btnRelease.Location = new System.Drawing.Point(701, 12);
+            this.btnRelease.Location = new System.Drawing.Point(964, 12);
             this.btnRelease.Name = "btnRelease";
             this.btnRelease.Size = new System.Drawing.Size(148, 73);
             this.btnRelease.TabIndex = 0;
@@ -62,7 +62,7 @@ namespace DHCPClient
             // 
             this.lbMess.AutoSize = true;
             this.lbMess.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lbMess.Location = new System.Drawing.Point(13, 30);
+            this.lbMess.Location = new System.Drawing.Point(233, 57);
             this.lbMess.Name = "lbMess";
             this.lbMess.Size = new System.Drawing.Size(88, 28);
             this.lbMess.TabIndex = 1;
@@ -72,7 +72,7 @@ namespace DHCPClient
             // 
             this.lbInfo.AutoSize = true;
             this.lbInfo.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lbInfo.Location = new System.Drawing.Point(516, 102);
+            this.lbInfo.Location = new System.Drawing.Point(928, 102);
             this.lbInfo.Name = "lbInfo";
             this.lbInfo.Size = new System.Drawing.Size(139, 28);
             this.lbInfo.TabIndex = 1;
@@ -82,21 +82,21 @@ namespace DHCPClient
             // 
             this.rtbMess.Location = new System.Drawing.Point(18, 102);
             this.rtbMess.Name = "rtbMess";
-            this.rtbMess.Size = new System.Drawing.Size(466, 314);
+            this.rtbMess.Size = new System.Drawing.Size(805, 450);
             this.rtbMess.TabIndex = 2;
             this.rtbMess.Text = "";
             // 
             // rtbPara
             // 
-            this.rtbPara.Location = new System.Drawing.Point(521, 147);
+            this.rtbPara.Location = new System.Drawing.Point(841, 145);
             this.rtbPara.Name = "rtbPara";
-            this.rtbPara.Size = new System.Drawing.Size(318, 269);
+            this.rtbPara.Size = new System.Drawing.Size(318, 399);
             this.rtbPara.TabIndex = 3;
             this.rtbPara.Text = "";
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(327, 12);
+            this.button1.Location = new System.Drawing.Point(590, 12);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(157, 73);
             this.button1.TabIndex = 4;
@@ -108,7 +108,7 @@ namespace DHCPClient
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(851, 450);
+            this.ClientSize = new System.Drawing.Size(1171, 556);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.rtbPara);
             this.Controls.Add(this.rtbMess);

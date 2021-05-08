@@ -149,7 +149,7 @@ namespace DHCPClient
                             if (o[j][0] == 51)
                             {
                                 Int64 epoch = (int)(DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalSeconds;
-                                time = epoch + BitConverter.ToInt32(new byte[] { o[j][5], o[j][4], o[j][3], o[j][2] }, 0);
+                                time = epoch + BitConverter.ToInt32(new byte[] { o[j][2], o[j][3], o[j][4], o[j][5] }, 0);
                             }
                         }
                         haveip = true;

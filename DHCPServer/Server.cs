@@ -275,7 +275,7 @@ namespace DHCPServer
             f.add(new byte[] { 99, 139, 83, 99 }); // add dhcp magic option
             f.add(new byte[] { 53, 1, 2 }); // add messeage type dhcp offer
             f.add(new byte[] { 54, 4, 192, 168, 1, 1 }); // add dhcp server identify
-            f.add(new byte[] { 51, 4, 0, 0, 0, 120 }); // add ip lease time (120 s)
+            f.add(new byte[] { 51, 4, 120, 0, 0, 0 }); // add ip lease time (120 s)
             f.add(new byte[] { 1, 4, 255, 255, 255, 0 }); // add subnetmask
             f.add(new byte[] { 3, 4, 192, 168, 1, 1 }); // add defualt gateway
             f.add(new byte[] { 6, 4, 192, 168, 1, 1 }); // add dns server
