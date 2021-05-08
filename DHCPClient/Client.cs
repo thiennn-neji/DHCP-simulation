@@ -23,6 +23,7 @@ namespace DHCPClient
             ip = IPAddress.Parse("0.0.0.0");
             defaultgateway = IPAddress.Parse("0.0.0.0");
             subnetmask = IPAddress.Parse("255.255.255.255");
+            CheckForIllegalCrossThreadCalls = false;
             t = new Thread(new ThreadStart(listening));
             t.Start();
             t2 = new Thread(new ThreadStart(display2));
@@ -105,6 +106,13 @@ namespace DHCPClient
         {
             sendrelease();
         }
+        public static byte[] StringToByteArray(string hex)
+        {
+            return Enumerable.Range(0, hex.Length)
+                             .Where(x => x % 2 == 0)
+                             .Select(x => Convert.ToByte(hex.Substring(x, 2), 16))
+                             .ToArray();
+        }
 
         void SendDiscover()
         {
@@ -120,20 +128,31 @@ namespace DHCPClient
             d.xid[1] = (byte)_random.Next(0, 255);
             d.xid[2] = (byte)_random.Next(0, 255);
             d.xid[3] = (byte)_random.Next(0, 255);
-            d.flags[0] = 1;
-            option f = new option();
 
-            f.add(new byte[] { 99, 139, 83, 99 }); // add dhcp magic option
-            f.add(new byte[] { 53, 1, 1 }); // add messeage type dhcp discover
+            d.flags[0] = 1;           
 
             var macAddr =
             (
                 from nic in NetworkInterface.GetAllNetworkInterfaces()
-                where nic.OperationalStatus == OperationalStatus.Up
-                select nic.Name
+                where nic.Name == "Wi-Fi"
+                select nic.GetPhysicalAddress().ToString()
             ).FirstOrDefault();
 
-            MessageBox.Show(macAddr);
+            byte[] MacAddr = StringToByteArray(macAddr);
+
+            for (int i = 0; i < MacAddr.Length; i++)
+            {
+                d.chaddr[i] = MacAddr[i];
+            }
+
+            option f = new option();
+
+            f.add(new byte[] { 99, 139, 83, 99 }); // add dhcp magic option
+            f.add(new byte[] { 53, 1, 1 }); // add messeage type dhcp discover
+            f.add(new byte[] { 61, 7, 1 }); // add client identify
+            f.add(MacAddr); // mac address
+            f.add(new byte[] { 55, 3, 1, 3, 6 }); // add parament request list
+            f.add(new byte[] { 255 }); // add end
 
             d.options = new byte[f.size];
             for (int i = 0; i < f.size; i++)
