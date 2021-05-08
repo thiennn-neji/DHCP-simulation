@@ -23,9 +23,9 @@ namespace DHCPServer
 
         public class item
         {
-            public string macaddress;
-            public string ip;
-            public Int64 time;
+            public string macaddress { get; set; }
+            public string ip { get; set; }
+            public Int64 time { get; set; }
         }
 
         List<item> table;
@@ -76,14 +76,108 @@ namespace DHCPServer
             }
         }
 
+        public static string ByteArrayToString(byte[] ba)
+        {
+            StringBuilder hex = new StringBuilder(ba.Length * 2);
+            foreach (byte b in ba)
+                hex.AppendFormat("{0:x2}", b);
+            return hex.ToString();
+        }
+
         void solve(DHCPPacket d)
         {
             // Xu li goi tin dhcp
+            List<byte[]> o = d.optionsplit();
+            for (int i = 0; i < o.Count(); i++) // identify
+            {
+                if (o[i][0] == 54)
+                {
+                    if (o[i][2] != 192 || o[i][3] != 168 || o[i][4] != 1 || o[i][5] != 1)
+                    {
+                        return;
+                    }
+                    break;
+                }
+            }
+            for (int i = 0; i < o.Count(); i++)
+            {
+                if (o[i][0] == 53)
+                {
+                    if (o[i][2] == 1)
+                    {
+                        for (int j = 2; j < 254; j++)
+                        {
+                            IPAddress g = new IPAddress(new byte[] { 192, 168, 1, (byte)j });
+                            bool flag = true;
+                            for (int z = 0; z < table.Count(); z++)
+                            {
+                                if (g.ToString() == table[z].ip)
+                                {
+                                    flag = false;
+                                    break;
+                                }
+                            }
+                            if (flag)
+                            {
+                                sendoffer(d, g);
+                            }
+                        }
+                    }
+                    else if (o[1][2] == 3)
+                    {
+                        IPAddress g;
+                        g = new IPAddress(d.yiaddr);
+                        if (!d.yiaddr.SequenceEqual(new byte[] { 0, 0, 0, 0 }))
+                        {
+                            for (int j = 0; j < o.Count(); j++)
+                            {
+                                if (o[i][0] == 50)
+                                {
+                                    g = new IPAddress(new byte[] { o[j][2], o[j][3], o[j][4], o[j][5] });
+                                    break;
+                                }
+                            }
+                        }
+                        byte[] Mc = new byte[d.hlen];
+                        for (int j = 0; j < d.hlen; j++)
+                        {
+                            Mc[j] = d.chaddr[j];
+                        }
+                        string mc = ByteArrayToString(Mc);
+                        item q = new item();
+                        q.macaddress = mc;
+                        q.ip = g.ToString();
+                        Int64 epoch = (int)(DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalSeconds;
+                        q.time = epoch + 120;
+                        table.Add(q);
+                        sendack(d, g);
+                    }
+                    else
+                    {
+                        IPAddress f = new IPAddress(d.ciaddr);
+                        byte[] Mc = new byte[d.hlen];
+                        for (int j = 0; j < d.hlen; j++)
+                        {
+                            Mc[j] = d.chaddr[j];
+                        }
+                        string mc = ByteArrayToString(Mc);
+                        for (int j = 0; j < table.Count(); j++)
+                        {
+                            if (table[j].ip == f.ToString() || table[j].macaddress == mc)
+                            {
+                                table.RemoveAt(j);
+                                j--;
+                            }
+                        }
+                    }
+                    break;
+                }                
+            }
         }
 
-        void sendack(DHCPPacket e, IPAddress z)
+        void sendack(DHCPPacket e, IPAddress z) // take dhcp discover and allocated ip and send offer packet
         {
-            // send dhcp ack
+            // send dhcp offer
             DHCPPacket d = new DHCPPacket();
             d.Init();
             d.op = 2;
@@ -97,6 +191,16 @@ namespace DHCPServer
 
             d.yiaddr = z.GetAddressBytes();
 
+            for (int i = 0; i < 8; i++)
+            {
+                d.flags[i] = e.flags[i];
+            }
+
+            for (int i = 0; i < e.giaddr.Length; i++)
+            {
+                d.giaddr[i] = e.giaddr[i];
+            }
+
             for (int i = 0; i < e.chaddr.Length; i++)
             {
                 d.chaddr[i] = e.chaddr[i];
@@ -105,7 +209,7 @@ namespace DHCPServer
             option f = new option();
 
             f.add(new byte[] { 99, 139, 83, 99 }); // add dhcp magic option
-            f.add(new byte[] { 53, 1, 2 }); // add messeage type dhcp offer
+            f.add(new byte[] { 53, 1, 5 }); // add messeage type dhcp ack
             f.add(new byte[] { 54, 4, 192, 168, 1, 1 }); // add dhcp server identify
             f.add(new byte[] { 51, 4, 0, 0, 0, 120 }); // add ip lease time (120 s)
             f.add(new byte[] { 1, 4, 255, 255, 255, 0 }); // add subnetmask
@@ -138,10 +242,20 @@ namespace DHCPServer
 
             d.yiaddr = z.GetAddressBytes();
 
+            for (int i = 0; i < 8; i++)
+            {
+                d.flags[i] = e.flags[i];
+            }
+
+            for (int i = 0; i < e.giaddr.Length; i++)
+            {
+                d.giaddr[i] = e.giaddr[i];
+            }
+
             for (int i = 0; i < e.chaddr.Length; i++)
             {
                 d.chaddr[i] = e.chaddr[i];
-            }
+            }           
 
             option f = new option();
 

@@ -22,6 +22,7 @@ namespace DHCPClient
             InitializeComponent();
             ip = IPAddress.Parse("0.0.0.0");
             defaultgateway = IPAddress.Parse("0.0.0.0");
+            dns = IPAddress.Parse("0.0.0.0");
             subnetmask = IPAddress.Parse("255.255.255.255");
             CheckForIllegalCrossThreadCalls = false;
             t = new Thread(new ThreadStart(listening));
@@ -50,6 +51,7 @@ namespace DHCPClient
         IPAddress ip; // Ip hien co cua client
         IPAddress defaultgateway; // default gateway cua client
         IPAddress subnetmask; // subneskmask hien co cua client
+        IPAddress dns; // dns server
         UdpClient udpclient;
         Int64 time;
         Thread t, t1, t2;
@@ -67,7 +69,6 @@ namespace DHCPClient
                     if (time - epoch <= 30000)
                     {
                         // viet ham
-
                         sendrequest_Renew(dhcpserver);
                     }
                 }
@@ -127,7 +128,28 @@ namespace DHCPClient
                     } 
                     else
                     {
-
+                        ip = new IPAddress(d.yiaddr);
+                        for (int j = 0; j < o.Count(); j++)
+                        {
+                            if (o[j][0] == 1) 
+                            {
+                                subnetmask = new IPAddress(new byte[] { o[j][2], o[j][3], o[j][4], o[j][5] });
+                            }
+                            if (o[j][0] == 3)
+                            {
+                                defaultgateway = new IPAddress(new byte[] { o[j][2], o[j][3], o[j][4], o[j][5] });
+                            }
+                            if (o[j][0] == 6)
+                            {
+                                dns = new IPAddress(new byte[] { o[j][2], o[j][3], o[j][4], o[j][5] });
+                            }
+                            if (o[j][0] == 51)
+                            {
+                                Int64 epoch = (int)(DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalSeconds;
+                                time = epoch + BitConverter.ToInt32(new byte[] { o[j][2], o[j][3], o[j][4], o[j][5] }, 0); ;
+                            }
+                        }
+                        haveip = true;
                     }
                     break;
                 }
@@ -146,6 +168,7 @@ namespace DHCPClient
             rtbPara.Text = "Ip address: " + ip.ToString() + "\r\n";
             rtbPara.Text += "Default Gateway: " + defaultgateway.ToString() + "\r\n";
             rtbPara.Text += "Subnet Mask: " + subnetmask.ToString() + "\r\n";
+            rtbPara.Text += "Dns server: " + dns.ToString() + "\r\n";
             rtbPara.Text += "Time remaining: " + Math.Max(time - epoch, 0).ToString() + "s\r\n";
             rtbPara.Text += "Refresh after 5s\r\n";
             Thread.Sleep(5000);
