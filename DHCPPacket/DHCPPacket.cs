@@ -189,50 +189,37 @@ namespace DHCPPacketNamespace
 			return true;
 		}
 
-		private void AddOptionElement(byte[] FromValue, ref byte[] TargetArray)
-		{
-			try
-			{
-				//resize the array accoringly
-
-				if (TargetArray != null)
-					Array.Resize(ref TargetArray,
-					   TargetArray.Length + FromValue.Length);
-				else
-					Array.Resize(ref TargetArray, FromValue.Length);
-				//copy the data over
-
-				Array.Copy(FromValue, 0, TargetArray,
-					TargetArray.Length - FromValue.Length,
-					FromValue.Length);
-			}
-			catch (Exception ex)
-			{
-				Console.WriteLine(ex.Message);
-			}
-		}
+		public int add(byte[] a, byte[] b, int index)
+        {
+			for (int i = 0; i < b.Length; i++)
+            {
+				a[index++] = b[i];
+            }
+			return index;
+        }
+		
 		public byte[] DHCPPacketToBytes()
 		{
 			byte[] returnValue;
 
 			try
 			{
-				returnValue = new byte[0];
-				AddOptionElement(new byte[] { this.op }, ref returnValue);
-				AddOptionElement(new byte[] { this.htype }, ref returnValue);
-				AddOptionElement(new byte[] { this.hlen }, ref returnValue);
-				AddOptionElement(new byte[] { this.hops }, ref returnValue);
-				AddOptionElement(this.xid, ref returnValue);
-				AddOptionElement(this.secs, ref returnValue);
-				AddOptionElement(this.flags, ref returnValue);
-				AddOptionElement(this.ciaddr, ref returnValue);
-				AddOptionElement(this.yiaddr, ref returnValue);
-				AddOptionElement(this.siaddr, ref returnValue);
-				AddOptionElement(this.giaddr, ref returnValue);
-				AddOptionElement(this.chaddr, ref returnValue);
-				AddOptionElement(this.sname, ref returnValue);
-				AddOptionElement(this.file, ref returnValue);
-				AddOptionElement(this.options, ref returnValue);
+				returnValue = new byte[236 + options.Length];
+				returnValue[0] = op;
+				returnValue[1] = htype;
+				returnValue[2] = hlen;
+				returnValue[3] = hops;
+				int i = add(returnValue, xid, 4);
+				i = add(returnValue, secs, i);
+				i = add(returnValue, flags, i);
+				i = add(returnValue, ciaddr, i);
+				i = add(returnValue, yiaddr, i);
+				i = add(returnValue, siaddr, i);
+				i = add(returnValue, giaddr, i);
+				i = add(returnValue, chaddr, i);
+				i = add(returnValue, sname, i);
+				i = add(returnValue, file, i);
+				i = add(returnValue, options, i);
 				return returnValue;
 			}
 			catch (Exception ex)

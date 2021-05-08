@@ -69,14 +69,13 @@ namespace DHCPClient
                 if (haveip)
                 {
                     Int64 epoch = (int)(DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalSeconds;
-                    if (time - epoch <= 45)
+                    if (time - epoch <= 30)
                     {
-                        MessageBox.Show((time - epoch).ToString());
                         // viet ham
                         sendrequest_Renew(dhcpserver);
                     }
                 }
-                Thread.Sleep(5000);
+                Thread.Sleep(15000);
             }
         }
 
@@ -353,6 +352,11 @@ namespace DHCPClient
             f.add(new byte[] { 54, 4 }); // add dhcp server identify
             f.add(dhcpserver);
             f.add(new byte[] { 255 });
+            d.options = new byte[f.size];
+            for (int i = 0; i < f.size; i++)
+            {
+                d.options[i] = f.data[i];
+            }
             //
             send(d);
 
