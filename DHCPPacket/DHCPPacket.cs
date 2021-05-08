@@ -41,7 +41,7 @@ namespace DHCPPacketNamespace
 				   +---------------------------------------------------------------+
 	*/
 	public class DHCPPacket
-    {
+	{
 		/// <summary> 
 		/// <para>Octet: 1</para>
 		/// <para>Message op code / message type.</para>
@@ -141,7 +141,7 @@ namespace DHCPPacketNamespace
 		public byte[] options;
 
 		public void Init()
-        {
+		{
 			this.xid = new byte[4];
 			this.secs = new byte[2];
 			this.flags = new byte[2];
@@ -154,12 +154,12 @@ namespace DHCPPacketNamespace
 			this.file = new byte[128];
 		}
 
-		public bool BytesToDHCPPacket (byte[] data)
-        {
+		public bool BytesToDHCPPacket(byte[] data)
+		{
 			System.IO.MemoryStream stm = new System.IO.MemoryStream(data, 0, data.Length);
 			System.IO.BinaryReader rdr = new System.IO.BinaryReader(stm);
 			try
-			{   
+			{
 				//read data
 				this.op = rdr.ReadByte();
 				this.htype = rdr.ReadByte();
@@ -180,10 +180,10 @@ namespace DHCPPacketNamespace
 				//options
 				byte temp;
 				do
-                {
+				{
 					temp = rdr.ReadByte();
 					this.options.Append<byte>(temp);
-                } while ((int)temp != 255);
+				} while ((int)temp != 255);
 			}
 			catch (Exception ex)
 			{
@@ -216,7 +216,7 @@ namespace DHCPPacketNamespace
 			}
 		}
 		public byte[] DHCPPacketToBytes()
-        {
+		{
 			byte[] returnValue;
 
 			try
@@ -239,28 +239,28 @@ namespace DHCPPacketNamespace
 				AddOptionElement(this.options, ref returnValue);
 				return returnValue;
 			}
-            catch (Exception ex)
-            {
+			catch (Exception ex)
+			{
 				Console.WriteLine(ex.Message);
-            }
-            finally
-            {
+			}
+			finally
+			{
 				returnValue = null;
-            }
+			}
 			return returnValue;
 		}
 
 		public string ToText()
-        {
+		{
 			string text = "";
 			// Chuyen sang text de hien thi
 			text += "op(1): " + op.ToString("X") + " htype(1): " + htype.ToString("X") + "op(1): " + op.ToString("X") + "op(1): " + op.ToString("X") + "\r\n";
 			return text;
-        }
+		}
 	}
 
 	public enum ARPparamEnums
-    {
+	{
 		/**
 					 Hardware Type (hrd)
 
@@ -294,7 +294,7 @@ namespace DHCPPacketNamespace
 	}
 
 	public enum HardwareAddLengthEnums
-    {
+	{
 		DIX_Ethernet = 6,
 		IEEE_8023_Ethernet = 6,
 		IEEE_8025_TokenRing = 6,
@@ -305,9 +305,9 @@ namespace DHCPPacketNamespace
 		FrameRelay4 = 4,
 		SMDS = 8
 	}
-	
+
 	public enum DHCPOptionEnums
-    {
+	{
 		SubnetMask = 1,
 		TimeOffset = 2,
 		Router = 3,
@@ -430,4 +430,26 @@ namespace DHCPPacketNamespace
 		/// </summary>
 		DHCPINFORM = 8
 	}
+
+	public class option
+    {
+		public byte[] data;
+		public int size;
+
+		public option()
+        {
+			data = new byte[376];
+			size = 0;
+        }
+
+		public void add(byte[] d)
+        {
+			for (int i = 0; i < d.Length; i++)
+            {
+				data[size++] = d[i];
+            }
+        }
+
+    }
+	
 }

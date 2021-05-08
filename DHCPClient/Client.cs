@@ -11,6 +11,7 @@ using System.Net;
 using System.Net.Sockets;
 using DHCPPacketNamespace;
 using System.Threading;
+using System.Net.NetworkInformation;
 
 namespace DHCPClient
 {
@@ -120,18 +121,43 @@ namespace DHCPClient
             d.xid[2] = (byte)_random.Next(0, 255);
             d.xid[3] = (byte)_random.Next(0, 255);
             d.flags[0] = 1;
-            d.options = new byte[500];
-            d.options[0] = 99;
-            d.options[0] = 130;
-            d.options[0] = 83;
-            d.options[0] = 99;
-            //
+            option f = new option();
 
+            f.add(new byte[] { 99, 139, 83, 99 }); // add dhcp magic option
+            f.add(new byte[] { 53, 1, 1 }); // add messeage type dhcp discover
+
+            var macAddr =
+            (
+                from nic in NetworkInterface.GetAllNetworkInterfaces()
+                where nic.OperationalStatus == OperationalStatus.Up
+                select nic.Name
+            ).FirstOrDefault();
+
+            MessageBox.Show(macAddr);
+
+            d.options = new byte[f.size];
+            for (int i = 0; i < f.size; i++)
+            {
+                d.options[i] = f.data[i];
+            }
+            //
+            send(d);
         }
 
-        void sendrequest(IPAddress ip)
+        void sendrequest(DHCPPacket e)
         {
             // send dhcp request
+            DHCPPacket d = new DHCPPacket();
+            d.Init();
+            d.op = 1;
+            d.htype = 1;
+            d.hlen = 6;
+            d.hops = 0;
+            d.xid = e.xid;
+            d.flags[0] = 1;
+            d.options = new byte[] { 99, 130, 83, 99, 53, 1, 3, 61, 7, 1, 0, 0, 0, 0, 0, 0, 50, 4, 0, 0, 0, 0, 54, 4, 0, 0, 0, 0, 55, 4, 1, 3, 6 };
+            //
+            send(d);
         }
         void sendrelease()
         {
