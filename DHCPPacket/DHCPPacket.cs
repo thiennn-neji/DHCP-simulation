@@ -140,6 +140,20 @@ namespace DHCPPacketNamespace
 		/// </summary>
 		public byte[] options;
 
+		public void Init()
+        {
+			this.xid = new byte[4];
+			this.secs = new byte[2];
+			this.flags = new byte[2];
+			this.ciaddr = new byte[4];
+			this.yiaddr = new byte[4];
+			this.siaddr = new byte[4];
+			this.giaddr = new byte[4];
+			this.chaddr = new byte[16];
+			this.sname = new byte[64];
+			this.file = new byte[128];
+		}
+
 		public bool BytesToDHCPPacket (byte[] data)
         {
 			System.IO.MemoryStream stm = new System.IO.MemoryStream(data, 0, data.Length);
@@ -240,6 +254,7 @@ namespace DHCPPacketNamespace
         {
 			string text = "";
 			// Chuyen sang text de hien thi
+			text += "op(1): " + op.ToString("X") + " htype(1): " + htype.ToString("X") + "op(1): " + op.ToString("X") + "op(1): " + op.ToString("X") + "\r\n";
 			return text;
         }
 	}

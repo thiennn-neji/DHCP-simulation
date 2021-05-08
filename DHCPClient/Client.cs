@@ -108,6 +108,25 @@ namespace DHCPClient
         void SendDiscover()
         {
             // send dhcp discover
+            DHCPPacket d = new DHCPPacket();
+            d.Init();
+            d.op = 1;
+            d.htype = 1;
+            d.hlen = 6;
+            d.hops = 0;
+            Random _random = new Random();
+            d.xid[0] = (byte)_random.Next(0, 255);
+            d.xid[1] = (byte)_random.Next(0, 255);
+            d.xid[2] = (byte)_random.Next(0, 255);
+            d.xid[3] = (byte)_random.Next(0, 255);
+            d.flags[0] = 1;
+            d.options = new byte[500];
+            d.options[0] = 99;
+            d.options[0] = 130;
+            d.options[0] = 83;
+            d.options[0] = 99;
+            //
+
         }
 
         void sendrequest(IPAddress ip)
