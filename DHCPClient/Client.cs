@@ -24,17 +24,18 @@ namespace DHCPClient
             defaultgateway = IPAddress.Parse("0.0.0.0");
             dns = IPAddress.Parse("0.0.0.0");
             subnetmask = IPAddress.Parse("255.255.255.255");
-            CheckForIllegalCrossThreadCalls = false;
+            CheckForIllegalCrossThreadCalls = false;          
+            
             t = new Thread(new ThreadStart(listening));
+            t.IsBackground = true;
             t.Start();
             t2 = new Thread(new ThreadStart(display2));
+            t2.IsBackground = true;
             t2.Start();
             time = 0;
             t1 = new Thread(new ThreadStart(auto_extend));
-            t1.Start();
-            t.IsBackground = true;
             t1.IsBackground = true;
-            t2.IsBackground = true;
+            t1.Start();            
             haveip = false;
             var macAddr =
             (
@@ -186,6 +187,14 @@ namespace DHCPClient
                              .Where(x => x % 2 == 0)
                              .Select(x => Convert.ToByte(hex.Substring(x, 2), 16))
                              .ToArray();
+        }
+
+        public static string ByteArrayToString(byte[] ba)
+        {
+            StringBuilder hex = new StringBuilder(ba.Length * 2);
+            foreach (byte b in ba)
+                hex.AppendFormat("{0:x2}", b);
+            return hex.ToString();
         }
 
         void SendDiscover()
@@ -348,6 +357,7 @@ namespace DHCPClient
             IPEndPoint ipend = new IPEndPoint(ipadd, 68);
             byte[] send = d.DHCPPacketToBytes();
             udpclient.Send(send, send.Length, ipend);
+            MessageBox.Show(ByteArrayToString(send));
         }
 
     }

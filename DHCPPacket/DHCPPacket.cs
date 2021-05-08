@@ -178,12 +178,8 @@ namespace DHCPPacketNamespace
 				//read the rest of the data, which shall determine the dhcp
 
 				//options
-				byte temp;
-				do
-				{
-					temp = rdr.ReadByte();
-					this.options.Append<byte>(temp);
-				} while ((int)temp != 255);
+				this.options = rdr.ReadBytes(data.Length - 236);
+				
 			}
 			catch (Exception ex)
 			{
@@ -267,9 +263,9 @@ namespace DHCPPacketNamespace
                 {
 					break;
                 }
-				int size = options[i + 1];
-				byte[] tmp = new byte[size + 2];
-				for (int j = 0; j < i + size; j++)
+				int size = options[i + 1] + 2;
+				byte[] tmp = new byte[size];
+				for (int j = 0; j < size; j++)
                 {
 					tmp[j] = options[i + j];
                 }

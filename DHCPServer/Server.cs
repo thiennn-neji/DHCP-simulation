@@ -34,13 +34,16 @@ namespace DHCPServer
 
         void listening()
         {
-            udpclient = new UdpClient(68);
             while (true)
             {
                 IPEndPoint IpEnd = new IPEndPoint(IPAddress.Any, 0);
                 Byte[] recvBytes = udpclient.Receive(ref IpEnd);
+                //MessageBox.Show(ByteArrayToString(recvBytes));
                 DHCPPacket d = new DHCPPacket();
-                d.BytesToDHCPPacket(recvBytes);
+                d.BytesToDHCPPacket(recvBytes);                
+                //MessageBox.Show(ByteArrayToString(d.chaddr));
+                //MessageBox.Show(ByteArrayToString(d.xid));
+                //MessageBox.Show(ByteArrayToString(d.options));
                 display(d);
                 solve(d);
             }
@@ -191,7 +194,7 @@ namespace DHCPServer
 
             d.yiaddr = z.GetAddressBytes();
 
-            for (int i = 0; i < 8; i++)
+            for (int i = 0; i < e.flags.Length; i++)
             {
                 d.flags[i] = e.flags[i];
             }
@@ -242,7 +245,7 @@ namespace DHCPServer
 
             d.yiaddr = z.GetAddressBytes();
 
-            for (int i = 0; i < 8; i++)
+            for (int i = 0; i < e.flags.Length; i++)
             {
                 d.flags[i] = e.flags[i];
             }
@@ -286,14 +289,16 @@ namespace DHCPServer
         private void button1_Click(object sender, EventArgs e)
         {
             table = new List<item>();
+            udpclient = new UdpClient(68);
             CheckForIllegalCrossThreadCalls = false;
             t1 = new Thread(new ThreadStart(listening));
-            t1.Start();
             t = new Thread(new ThreadStart(time));
-            t.Start();
-            button1.Enabled = false;
             t.IsBackground = true;
             t1.IsBackground = true;
+            t1.Start();            
+            t.Start();
+            button1.Enabled = false;
+                       
         }
 
         void send(DHCPPacket d)
