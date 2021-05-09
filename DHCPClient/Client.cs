@@ -20,13 +20,30 @@ namespace DHCPClient
         public Client()
         {
             InitializeComponent();
-            ip = IPAddress.Parse("0.0.0.0");
+            ip = IPAddress.Parse("0.0.0.0"); // Gan cac thong so mac dinh luc moi khoi dong
             defaultgateway = IPAddress.Parse("0.0.0.0");
             dns = IPAddress.Parse("0.0.0.0");
             subnetmask = IPAddress.Parse("255.255.255.255");
+
+            var macAddr =
+            (
+                from nic in NetworkInterface.GetAllNetworkInterfaces()
+                where nic.OperationalStatus == OperationalStatus.Up
+                select nic.GetPhysicalAddress().ToString()
+            ).FirstOrDefault(); // Lay dia chi mac
+            try
+            {
+                MacAddr = StringToByteArray(macAddr);
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("Không tìm thấy card mạng");
+                MacAddr = new byte[] { 0, 0, 0, 0, 0, 0 };
+            }  // Gan dia chi mac vao mang MacAddr
+
             CheckForIllegalCrossThreadCalls = false;
 
-            udpclient = new UdpClient(6700);
+            udpclient = new UdpClient(6700); // Mo port
 
             t = new Thread(new ThreadStart(listening));
             t.IsBackground = true;
@@ -38,73 +55,59 @@ namespace DHCPClient
             t1 = new Thread(new ThreadStart(auto_extend));
             t1.IsBackground = true;
             t1.Start();            
-            haveip = false;
-            var macAddr =
-            (
-                from nic in NetworkInterface.GetAllNetworkInterfaces()
-                where nic.OperationalStatus == OperationalStatus.Up
-                select nic.GetPhysicalAddress().ToString()
-            ).FirstOrDefault();
-            try
-            {
-                MacAddr = StringToByteArray(macAddr);
-            } catch(Exception)
-            {
-                MessageBox.Show("Không tìm thấy card mạng");
-                MacAddr = new byte[] { 0, 0, 0, 0, 0, 0 };
-            }
+            haveip = false; // Chua co ip            
 
-            dhcpserver = new byte[] { 0, 0, 0, 0 };
+            dhcpserver = new byte[] { 0, 0, 0, 0 }; // Dia chi ip cua server dhcp
         }
 
         IPAddress ip; // Ip hien co cua client
         IPAddress defaultgateway; // default gateway cua client
         IPAddress subnetmask; // subneskmask hien co cua client
         IPAddress dns; // dns server
-        UdpClient udpclient;
-        Int64 time;
-        Thread t, t1, t2;
-        bool haveip;
-        byte[] MacAddr;
-        byte[] dhcpserver;
+        UdpClient udpclient; // cong ip nhan va gui goi tin dhcp
+        Int64 time; // thoi gian het han cua ip
+        Thread t, t1, t2; // Luong t su dung de lang nghe doi dhcp, t1 su dung de cap nhat thong tin (display2), t2 su dung de kiem tra gia han
+        bool haveip; // true neu dang co ip, false neu chua co ip
+        byte[] MacAddr; // chua mac address
+        byte[] dhcpserver; // chua dia chi ip chua server
 
         void auto_extend() // tu dong gia han ip
         {
             while (true)
             {
-                if (haveip)
+                if (haveip) // Neu dang co ip thi moi kiem tra
                 {
-                    Int64 epoch = (int)(DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalSeconds;
-                    if (time - epoch <= 30)
+                    Int64 epoch = (int)(DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalSeconds; // Lay thoi gian hien tai
+                    if (time - epoch <= 30) // neu thoi gian het han - thoi gian hien tai <= 30s
                     {
                         // viet ham
-                        sendrequest_Renew(dhcpserver);
+                        sendrequest_Renew(dhcpserver); // gui goi tin gia han
                     }
                 }
-                Thread.Sleep(15000);
+                Thread.Sleep(15000); // ngu 15s
             }
         }
 
-        void listening()
+        void listening() // Lang nghe goi dhcp
         {            
             while (true)
             {
                 IPEndPoint IpEnd = new IPEndPoint(IPAddress.Any, 0);
                 Byte[] recvBytes = udpclient.Receive(ref IpEnd);
                 DHCPPacket d = new DHCPPacket();
-                d.BytesToDHCPPacket(recvBytes);
-                display1(d);
-                solve(d);
+                d.BytesToDHCPPacket(recvBytes); // chuyen goi tin tu dang byte sang dang DHCPPacket
+                display1(d); // Hien thi goi len mang hinh
+                solve(d); // xu li goi vua nhan
             }
         }
 
         private void btnRenew_Click(object sender, EventArgs e)
         {
-            if (haveip)
+            if (haveip) // Neu ma co ip roi thi phai gui release roi moi gui discover
             {
                 sendrelease();
             }            
-            SendDiscover();
+            SendDiscover(); // gui goi tin dhcp discover
         }
 
         void solve(DHCPPacket d)
@@ -113,9 +116,9 @@ namespace DHCPClient
             List<byte[]> o = d.optionsplit();
             for (int i = 0; i < o.Count(); i++)
             {
-                if (o[i][0] == 53)
+                if (o[i][0] == 53) // dhcp messeage type
                 {
-                    if (o[i][2] == 2)
+                    if (o[i][2] == 2) // xac dinh dhcp offer
                     {
                         if (!dhcpserver.SequenceEqual(new byte[] { 0, 0, 0, 0 }))
                         {
@@ -123,7 +126,7 @@ namespace DHCPClient
                         }                           
                         for (int j = 0; j < o.Count(); j++)
                         {
-                            if (o[j][0] == 54) // server identify
+                            if (o[j][0] == 54) // server dhcp minh da chon
                             {
                                 for (int z = 0; z < 4; z++)
                                 {
@@ -132,10 +135,9 @@ namespace DHCPClient
                                 break;
                             }
                         }
-                        sendrequest(d, dhcpserver);
-                        //MessageBox.Show("DHCPOffer");
+                        sendrequest(d, dhcpserver); // gui goi tin request gom goi dhcp offer va dhcp server da chon
                     } 
-                    else
+                    else // Xac dinh day la goi dhcp ack (nak coming soon)
                     {
                         ip = new IPAddress(d.yiaddr);
                         for (int j = 0; j < o.Count(); j++)
@@ -168,15 +170,16 @@ namespace DHCPClient
         void display1(DHCPPacket d)
         {
             // Display dhcp messeage
-            rtbMess.Text += d.ToText() + "\r\n";
+            rtbMess.Text += d.ToText() + "\r\n"; // d.ToText() la ham tra ve mot string tu DHCPPacket
         }
 
-        void display2()
+        void display2() // Ham cap nhat thong tin su dung luon t1
         {
             while (true)
             {
-                Int64 epoch = (int)(DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalSeconds;
-                rtbPara.Text = "Ip address: " + ip.ToString() + "\r\n";
+                Int64 epoch = (int)(DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalSeconds; // Lay thong tin thoi gian thuc
+                rtbPara.Text = "Mac address: " + ByteArrayToString(MacAddr) + "\r\n";
+                rtbPara.Text += "Ip address: " + ip.ToString() + "\r\n";
                 rtbPara.Text += "Default Gateway: " + defaultgateway.ToString() + "\r\n";
                 rtbPara.Text += "Subnet Mask: " + subnetmask.ToString() + "\r\n";
                 rtbPara.Text += "Dns server: " + dns.ToString() + "\r\n";
@@ -186,7 +189,7 @@ namespace DHCPClient
             }
         }
         private void btnRelease_Click(object sender, EventArgs e)
-        {
+        { // nut release
             if (haveip)
             {
                 sendrelease();
@@ -198,7 +201,7 @@ namespace DHCPClient
                              .Where(x => x % 2 == 0)
                              .Select(x => Convert.ToByte(hex.Substring(x, 2), 16))
                              .ToArray();
-        }
+        } // chuyen doi tu string sang byte stack over flow
 
         public static string ByteArrayToString(byte[] ba)
         {
@@ -206,7 +209,7 @@ namespace DHCPClient
             foreach (byte b in ba)
                 hex.AppendFormat("{0:x2}", b);
             return hex.ToString();
-        }
+        } // Chuyen tu byte array sang string stack over flow
 
         void SendDiscover()
         {
@@ -324,12 +327,12 @@ namespace DHCPClient
             send(d);
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void button1_Click(object sender, EventArgs e) // Clear log button
         {
-            rtbMess.Text = "";
+            rtbMess.Text = ""; 
         }
 
-        private void button2_Click(object sender, EventArgs e)
+        private void button2_Click(object sender, EventArgs e) // Extend button
         {
             if (haveip)
             {
@@ -381,7 +384,7 @@ namespace DHCPClient
             time = 0;
             dhcpserver = new byte[] { 0, 0, 0, 0 };
         }
-        void send(DHCPPacket d)
+        void send(DHCPPacket d) // Nhan mot goi DHCP packet chuyen thanh dang byte va gui di
         {
             IPAddress ipadd = IPAddress.Parse("255.255.255.255");
             IPEndPoint ipend = new IPEndPoint(ipadd, 6800);

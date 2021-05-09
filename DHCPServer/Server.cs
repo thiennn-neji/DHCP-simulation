@@ -21,16 +21,16 @@ namespace DHCPServer
             InitializeComponent();
         }
 
-        public class item
+        public class item// item hien thi ra man hinh
         {
             public string macaddress { get; set; }
             public string ip { get; set; }
             public Int64 time { get; set; }
         }
 
-        List<item> table;
-        UdpClient udpclient;
-        Thread t, t1;
+        List<item> table; // danh sach bang ip va mac de hien thi
+        UdpClient udpclient; // udp mo port de nhan dhcp
+        Thread t, t1; // luong t su dung cho viec nhan goi dhcp, t1 su dung cho viec hien thi
 
         void listening()
         {
@@ -50,9 +50,9 @@ namespace DHCPServer
             while (true)
             {
                 Int64 epoch = (int)(DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalSeconds;
-                for (int i = 0; i < table.Count(); i++)
+                for (int i = 0; i < table.Count(); i++) // Duyet bang ip
                 {
-                    if (table[i].time < epoch)
+                    if (table[i].time < epoch) // neu ip nao qua thoi han thi xoa khoi bang
                     {
                         table.RemoveAt(i);
                         i--;
@@ -63,7 +63,7 @@ namespace DHCPServer
             }
         }
 
-        void ShowTime(Int64 ti)
+        void ShowTime(Int64 ti) // Hien thi ra man hinh
         {
             listView1.Items.Clear();
             for (int i = 0; i < table.Count(); i++)
@@ -87,7 +87,7 @@ namespace DHCPServer
         {
             // Xu li goi tin dhcp
             List<byte[]> o = d.optionsplit();
-            for (int i = 0; i < o.Count(); i++) // identify
+            for (int i = 0; i < o.Count(); i++) // dhcp server identify
             {
                 if (o[i][0] == 54)
                 {
@@ -102,7 +102,7 @@ namespace DHCPServer
             {
                 if (o[i][0] == 53)
                 {
-                    if (o[i][2] == 1)
+                    if (o[i][2] == 1) // xac dinh dhcp discover
                     {
                         int loop = 20;
                         while (loop >= 0)
@@ -126,7 +126,7 @@ namespace DHCPServer
                                 return;
                             }
                         }    
-                        for (int j = 2; j < 254; j++)
+                        for (int j = 2; j <= 254; j++) // Kiem tra tung dia chi ip
                         {
                             IPAddress g = new IPAddress(new byte[] { 192, 168, 1, (byte)j });
                             bool flag = true;
@@ -145,15 +145,15 @@ namespace DHCPServer
                             }
                         }
                     }
-                    else if (o[i][2] == 3)
+                    else if (o[i][2] == 3) // Xac dinh dhcp request
                     {
                         IPAddress g;
-                        g = new IPAddress(d.ciaddr);
-                        if (d.ciaddr.SequenceEqual(new byte[] { 0, 0, 0, 0 }))
+                        g = new IPAddress(d.ciaddr); // request o dang rebound, ip -> ciaddr
+                        if (d.ciaddr.SequenceEqual(new byte[] { 0, 0, 0, 0 })) // chua co ip -> dhcp dang o dang new
                         {
                             for (int j = 0; j < o.Count(); j++)
                             {
-                                if (o[j][0] == 50)
+                                if (o[j][0] == 50) // request IP address
                                 {
                                     g = new IPAddress(new byte[] { o[j][2], o[j][3], o[j][4], o[j][5] });
                                     break;
@@ -170,25 +170,26 @@ namespace DHCPServer
                         item q = new item();
                         q.macaddress = mc;
                         q.ip = g.ToString();
-                        Int64 epoch = (int)(DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalSeconds;
+                        Int64 epoch = (int)(DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalSeconds; // setup item
                         q.time = epoch + 120;
                         for (int j = 0; j < table.Count(); j++)
                         {
                             if (table[j].ip == q.ip)
                             {
-                                if (table[j].macaddress == q.macaddress)
+                                if (table[j].macaddress == q.macaddress) // goi tin dang xin gia han
                                 {
-                                    table.RemoveAt(j);
+                                    table.RemoveAt(j); // xoa goi cu
                                 } else
                                 {
                                     // send NAK T^T coming soon
+                                    MessageBox.Show("NAK needed");
                                 }
                             }
                         }
-                        table.Add(q);
-                        sendack(d, g);
+                        table.Add(q); // add goi moi vo
+                        sendack(d, g); // send goi ack
                     }
-                    else
+                    else // goi dhcp release
                     {
                         IPAddress f = new IPAddress(d.ciaddr);
                         byte[] Mc = new byte[d.hlen];
@@ -197,7 +198,7 @@ namespace DHCPServer
                             Mc[j] = d.chaddr[j];
                         }
                         string mc = ByteArrayToString(Mc);
-                        for (int j = 0; j < table.Count(); j++)
+                        for (int j = 0; j < table.Count(); j++) // Duyet ban va xoa di ip
                         {
                             if (table[j].ip == f.ToString() || table[j].macaddress == mc)
                             {
@@ -313,13 +314,13 @@ namespace DHCPServer
             send(d);
         }
 
-        void display(DHCPPacket d)
+        void display(DHCPPacket d) // hien thi goi tin vua nhan ra man hinh
         {
             // Hien thi goi tin dhcp vua nhan duoc len man hinh
             richTextBox1.Text += d.ToText() + "\r\n";
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void button1_Click(object sender, EventArgs e) // start dhcp server button
         {
             table = new List<item>();
             udpclient = new UdpClient(6800);
@@ -333,12 +334,12 @@ namespace DHCPServer
             button1.Enabled = false;                       
         }
 
-        private void button2_Click(object sender, EventArgs e)
+        private void button2_Click(object sender, EventArgs e) // clear log button
         {
             richTextBox1.Text = "";
         }
 
-        void send(DHCPPacket d)
+        void send(DHCPPacket d) // send
         {
             IPAddress ipadd = IPAddress.Parse("255.255.255.255");
             IPEndPoint ipend = new IPEndPoint(ipadd, 6700);
