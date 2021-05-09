@@ -42,11 +42,17 @@ namespace DHCPClient
             var macAddr =
             (
                 from nic in NetworkInterface.GetAllNetworkInterfaces()
-                where nic.NetworkInterfaceType == NetworkInterfaceType.Wireless80211
+                where nic.OperationalStatus == OperationalStatus.Up
                 select nic.GetPhysicalAddress().ToString()
             ).FirstOrDefault();
-
-            MacAddr = StringToByteArray(macAddr);
+            try
+            {
+                MacAddr = StringToByteArray(macAddr);
+            } catch(Exception)
+            {
+                MessageBox.Show("Không tìm thấy card mạng");
+                MacAddr = new byte[] { 0, 0, 0, 0, 0, 0 };
+            }
 
             dhcpserver = new byte[] { 0, 0, 0, 0 };
         }
