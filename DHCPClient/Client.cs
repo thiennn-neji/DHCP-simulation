@@ -42,7 +42,7 @@ namespace DHCPClient
             var macAddr =
             (
                 from nic in NetworkInterface.GetAllNetworkInterfaces()
-                where nic.Name == "Wi-Fi"
+                where nic.NetworkInterfaceType == NetworkInterfaceType.Wireless80211
                 select nic.GetPhysicalAddress().ToString()
             ).FirstOrDefault();
 
