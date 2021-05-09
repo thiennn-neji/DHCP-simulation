@@ -323,14 +323,6 @@ namespace DHCPClient
             rtbMess.Text = "";
         }
 
-        private void button2_Click(object sender, EventArgs e)
-        {
-            if (haveip)
-            {
-                sendrequest_Renew(dhcpserver);
-            }
-        }
-
         void sendrelease()
         {
             // send dhcp release          

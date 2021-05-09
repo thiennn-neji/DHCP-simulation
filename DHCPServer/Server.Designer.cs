@@ -61,7 +61,7 @@
             // 
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.Location = new System.Drawing.Point(968, 56);
+            this.label2.Location = new System.Drawing.Point(914, 56);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(104, 29);
             this.label2.TabIndex = 3;
@@ -76,7 +76,7 @@
             this.listView1.HideSelection = false;
             this.listView1.Location = new System.Drawing.Point(802, 88);
             this.listView1.Name = "listView1";
-            this.listView1.Size = new System.Drawing.Size(415, 422);
+            this.listView1.Size = new System.Drawing.Size(329, 422);
             this.listView1.TabIndex = 4;
             this.listView1.UseCompatibleStateImageBehavior = false;
             this.listView1.View = System.Windows.Forms.View.Details;
@@ -84,21 +84,21 @@
             // columnHeader1
             // 
             this.columnHeader1.Text = "MacAddr";
-            this.columnHeader1.Width = 90;
+            this.columnHeader1.Width = 97;
             // 
             // columnHeader2
             // 
             this.columnHeader2.Text = "IpAddr";
-            this.columnHeader2.Width = 110;
+            this.columnHeader2.Width = 85;
             // 
             // columnHeader3
             // 
             this.columnHeader3.Text = "Time(refresh after 5s)";
-            this.columnHeader3.Width = 150;
+            this.columnHeader3.Width = 204;
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(802, 3);
+            this.button1.Location = new System.Drawing.Point(802, 2);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(299, 47);
             this.button1.TabIndex = 5;
@@ -120,7 +120,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1229, 556);
+            this.ClientSize = new System.Drawing.Size(1145, 556);
             this.Controls.Add(this.button2);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.listView1);
