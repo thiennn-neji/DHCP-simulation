@@ -381,6 +381,7 @@ namespace DHCPClient
             ip = IPAddress.Parse("0.0.0.0");
             defaultgateway = IPAddress.Parse("0.0.0.0");
             subnetmask = IPAddress.Parse("255.255.255.255");
+            dns = IPAddress.Parse("0.0.0.0");
             time = 0;
             dhcpserver = new byte[] { 0, 0, 0, 0 };
         }
