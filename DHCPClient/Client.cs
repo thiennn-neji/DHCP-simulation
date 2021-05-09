@@ -104,7 +104,7 @@ namespace DHCPClient
         void solve(DHCPPacket d)
         {
             // Xu li khi nhan goi DHCP tu server
-            List<byte[]> o = d.DHCPOptionsSplit();
+            List<byte[]> o = d.optionsplit();
             for (int i = 0; i < o.Count(); i++)
             {
                 if (o[i][0] == 53)
@@ -162,7 +162,7 @@ namespace DHCPClient
         void display1(DHCPPacket d)
         {
             // Display dhcp messeage
-            rtbMess.Text += d.ToString() + "\r\n";
+            rtbMess.Text += d.ToText() + "\r\n";
         }
 
         void display2()
@@ -208,8 +208,8 @@ namespace DHCPClient
             DHCPPacket d = new DHCPPacket();
             d.Init();
             d.op = 1;
-            d.htype = (byte)ARPparamEnums.IEEE_8023_Ethernet;
-            d.hlen = (byte)HardwareAddressLengthEnums.IEEE_8023_Ethernet;
+            d.htype = 1;
+            d.hlen = 6;
             d.hops = 0;
             Random _random = new Random();
             d.xid[0] = (byte)_random.Next(0, 255);
@@ -222,17 +222,17 @@ namespace DHCPClient
                 d.chaddr[i] = MacAddr[i];
             }
 
-            DHCPOption f = new DHCPOption();
+            option f = new option();
 
-            f.Add(new byte[] { 99, 139, 83, 99 }); // add dhcp magic option
-            f.Add(new byte[] { 53, 1, 1 }); // add messeage type dhcp discover
-            f.Add(new byte[] { 55, 3, 1, 3, 6 }); // add parament request list
-            f.Add(new byte[] { 255 }); // add end
+            f.add(new byte[] { 99, 139, 83, 99 }); // add dhcp magic option
+            f.add(new byte[] { 53, 1, 1 }); // add messeage type dhcp discover
+            f.add(new byte[] { 55, 3, 1, 3, 6 }); // add parament request list
+            f.add(new byte[] { 255 }); // add end
 
             d.options = new byte[f.size];
             for (int i = 0; i < f.size; i++)
             {
-                d.options[i] = f.contents[i];
+                d.options[i] = f.data[i];
             }
             //
             send(d);
@@ -244,8 +244,8 @@ namespace DHCPClient
             DHCPPacket d = new DHCPPacket();
             d.Init();
             d.op = 1;
-            d.htype = (byte)ARPparamEnums.IEEE_8023_Ethernet;
-            d.hlen = (byte)HardwareAddressLengthEnums.IEEE_8023_Ethernet;
+            d.htype = 1;
+            d.hlen = 6;
             d.hops = 0;
             for (int i = 0; i < e.xid.Length; i++)
             {
@@ -257,21 +257,21 @@ namespace DHCPClient
                 d.chaddr[i] = MacAddr[i];
             }
 
-            DHCPOption f = new DHCPOption();
+            option f = new option();
 
-            f.Add(new byte[] { 99, 139, 83, 99 }); // add dhcp magic option
-            f.Add(new byte[] { 53, 1, 3 }); // add messeage type dhcp request
-            f.Add(new byte[] { 50, 4 }); // add request ip address
-            f.Add(e.yiaddr); // ip address
-            f.Add(new byte[] { 54, 4 }); // add dhcp server identify
-            f.Add(dhcpserver); // add dhcp server identify            
-            f.Add(new byte[] { 55, 3, 1, 3, 6 }); // add parament request list
-            f.Add(new byte[] { 255 }); // add end
+            f.add(new byte[] { 99, 139, 83, 99 }); // add dhcp magic option
+            f.add(new byte[] { 53, 1, 3 }); // add messeage type dhcp request
+            f.add(new byte[] { 50, 4 }); // add request ip address
+            f.add(e.yiaddr); // ip address
+            f.add(new byte[] { 54, 4 }); // add dhcp server identify
+            f.add(dhcpserver); // add dhcp server identify            
+            f.add(new byte[] { 55, 3, 1, 3, 6 }); // add parament request list
+            f.add(new byte[] { 255 }); // add end
 
             d.options = new byte[f.size];
             for (int i = 0; i < f.size; i++)
             {
-                d.options[i] = f.contents[i];
+                d.options[i] = f.data[i];
             }
             //
             send(d);
@@ -283,8 +283,8 @@ namespace DHCPClient
             DHCPPacket d = new DHCPPacket();
             d.Init();
             d.op = 1;
-            d.htype = (byte)ARPparamEnums.IEEE_8023_Ethernet;
-            d.hlen = (byte)HardwareAddressLengthEnums.IEEE_8023_Ethernet;
+            d.htype = 1;
+            d.hlen = 6;
             d.hops = 0;
 
             Random _random = new Random();
@@ -300,19 +300,19 @@ namespace DHCPClient
                 d.chaddr[i] = MacAddr[i];
             }
 
-            DHCPOption f = new DHCPOption();
+            option f = new option();
 
-            f.Add(new byte[] { 99, 139, 83, 99 }); // add dhcp magic option
-            f.Add(new byte[] { 53, 1, 3 }); // add messeage type dhcp request
-            f.Add(new byte[] { 54, 4 }); // add dhcp server identify
-            f.Add(dhcpserver); // add dhcp server identify            
-            f.Add(new byte[] { 55, 3, 1, 3, 6 }); // add parament request list
-            f.Add(new byte[] { 255 }); // add end
+            f.add(new byte[] { 99, 139, 83, 99 }); // add dhcp magic option
+            f.add(new byte[] { 53, 1, 3 }); // add messeage type dhcp request
+            f.add(new byte[] { 54, 4 }); // add dhcp server identify
+            f.add(dhcpserver); // add dhcp server identify            
+            f.add(new byte[] { 55, 3, 1, 3, 6 }); // add parament request list
+            f.add(new byte[] { 255 }); // add end
 
             d.options = new byte[f.size];
             for (int i = 0; i < f.size; i++)
             {
-                d.options[i] = f.contents[i];
+                d.options[i] = f.data[i];
             }
             //
             send(d);
@@ -338,8 +338,8 @@ namespace DHCPClient
             DHCPPacket d = new DHCPPacket();
             d.Init();
             d.op = 1;
-            d.htype = (byte)ARPparamEnums.IEEE_8023_Ethernet;
-            d.hlen = (byte)HardwareAddressLengthEnums.IEEE_8023_Ethernet;
+            d.htype = 1;
+            d.hlen = 6;
             d.hops = 0;
             Random _random = new Random();
             d.xid[0] = (byte)_random.Next(0, 255);
@@ -353,17 +353,17 @@ namespace DHCPClient
             {
                 d.chaddr[i] = MacAddr[i];
             }
-            DHCPOption f = new DHCPOption();
+            option f = new option();
 
-            f.Add(new byte[] { 99, 139, 83, 99 }); // add dhcp magic option
-            f.Add(new byte[] { 53, 1, 7 }); // add messeage type dhcp request
-            f.Add(new byte[] { 54, 4 }); // add dhcp server identify
-            f.Add(dhcpserver);
-            f.Add(new byte[] { 255 });
+            f.add(new byte[] { 99, 139, 83, 99 }); // add dhcp magic option
+            f.add(new byte[] { 53, 1, 7 }); // add messeage type dhcp request
+            f.add(new byte[] { 54, 4 }); // add dhcp server identify
+            f.add(dhcpserver);
+            f.add(new byte[] { 255 });
             d.options = new byte[f.size];
             for (int i = 0; i < f.size; i++)
             {
-                d.options[i] = f.contents[i];
+                d.options[i] = f.data[i];
             }
             //
             send(d);

@@ -23,8 +23,8 @@ namespace DHCPServer
 
         public class item
         {
-            public string macAddr { get; set; }
-            public string ipAddr { get; set; }
+            public string macaddress { get; set; }
+            public string ip { get; set; }
             public Int64 time { get; set; }
         }
 
@@ -68,8 +68,8 @@ namespace DHCPServer
             listView1.Items.Clear();
             for (int i = 0; i < table.Count(); i++)
             {
-                ListViewItem lvItem = new ListViewItem(table[i].macAddr);
-                lvItem.SubItems.Add(table[i].ipAddr);
+                ListViewItem lvItem = new ListViewItem(table[i].macaddress);
+                lvItem.SubItems.Add(table[i].ip);
                 lvItem.SubItems.Add((table[i].time - ti).ToString() + "s");
                 listView1.Items.Add(lvItem);
             }
@@ -86,10 +86,10 @@ namespace DHCPServer
         void solve(DHCPPacket d)
         {
             // Xu li goi tin dhcp
-            List<byte[]> o = d.DHCPOptionsSplit();
+            List<byte[]> o = d.optionsplit();
             for (int i = 0; i < o.Count(); i++) // identify
             {
-                if (o[i][0] == (byte)DHCPOptionEnums.ServerIdentifier)
+                if (o[i][0] == 54)
                 {
                     if (o[i][2] != 192 || o[i][3] != 168 || o[i][4] != 1 || o[i][5] != 1)
                     {
@@ -100,7 +100,7 @@ namespace DHCPServer
             }
             for (int i = 0; i < o.Count(); i++)
             {
-                if (o[i][0] == (byte)DHCPOptionEnums.DHCPMessageTYPE)
+                if (o[i][0] == 53)
                 {
                     if (o[i][2] == 1)
                     {
@@ -114,7 +114,7 @@ namespace DHCPServer
                             bool flag = true;
                             for (int z = 0; z < table.Count(); z++)
                             {
-                                if (g.ToString() == table[z].ipAddr)
+                                if (g.ToString() == table[z].ip)
                                 {
                                     flag = false;
                                     break;
@@ -132,7 +132,7 @@ namespace DHCPServer
                             bool flag = true;
                             for (int z = 0; z < table.Count(); z++)
                             {
-                                if (g.ToString() == table[z].ipAddr)
+                                if (g.ToString() == table[z].ip)
                                 {
                                     flag = false;
                                     break;
@@ -168,15 +168,15 @@ namespace DHCPServer
                         string mc = ByteArrayToString(Mc);                          
                         
                         item q = new item();
-                        q.macAddr = mc;
-                        q.ipAddr = g.ToString();
+                        q.macaddress = mc;
+                        q.ip = g.ToString();
                         Int64 epoch = (int)(DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalSeconds;
                         q.time = epoch + 120;
                         for (int j = 0; j < table.Count(); j++)
                         {
-                            if (table[j].ipAddr == q.ipAddr)
+                            if (table[j].ip == q.ip)
                             {
-                                if (table[j].macAddr == q.macAddr)
+                                if (table[j].macaddress == q.macaddress)
                                 {
                                     table.RemoveAt(j);
                                 } else
@@ -199,7 +199,7 @@ namespace DHCPServer
                         string mc = ByteArrayToString(Mc);
                         for (int j = 0; j < table.Count(); j++)
                         {
-                            if (table[j].ipAddr == f.ToString() || table[j].macAddr == mc)
+                            if (table[j].ip == f.ToString() || table[j].macaddress == mc)
                             {
                                 table.RemoveAt(j);
                                 j--;
@@ -217,8 +217,8 @@ namespace DHCPServer
             DHCPPacket d = new DHCPPacket();
             d.Init();
             d.op = 2;
-            d.htype = (byte)ARPparamEnums.IEEE_8023_Ethernet;
-            d.hlen = (byte)HardwareAddressLengthEnums.IEEE_8023_Ethernet;
+            d.htype = 1;
+            d.hlen = 6;
             d.hops = 0;
             for (int i = 0; i < e.xid.Length; i++)
             {
@@ -242,21 +242,21 @@ namespace DHCPServer
                 d.chaddr[i] = e.chaddr[i];
             }
 
-            DHCPOption f = new DHCPOption();
+            option f = new option();
 
-            f.Add(new byte[] { 99, 139, 83, 99 }); // add dhcp magic option
-            f.Add(new byte[] { 53, 1, 5 }); // add messeage type dhcp ack
-            f.Add(new byte[] { 54, 4, 192, 168, 1, 1 }); // add dhcp server identify
-            f.Add(new byte[] { 51, 4, 120, 0, 0, 0 }); // add ip lease time (120 s)
-            f.Add(new byte[] { 1, 4, 255, 255, 255, 0 }); // add subnetmask
-            f.Add(new byte[] { 3, 4, 192, 168, 1, 1 }); // add defualt gateway
-            f.Add(new byte[] { 6, 4, 192, 168, 1, 1 }); // add dns server
-            f.Add(new byte[] { 255 }); // add end
+            f.add(new byte[] { 99, 139, 83, 99 }); // add dhcp magic option
+            f.add(new byte[] { 53, 1, 5 }); // add messeage type dhcp ack
+            f.add(new byte[] { 54, 4, 192, 168, 1, 1 }); // add dhcp server identify
+            f.add(new byte[] { 51, 4, 120, 0, 0, 0 }); // add ip lease time (120 s)
+            f.add(new byte[] { 1, 4, 255, 255, 255, 0 }); // add subnetmask
+            f.add(new byte[] { 3, 4, 192, 168, 1, 1 }); // add defualt gateway
+            f.add(new byte[] { 6, 4, 192, 168, 1, 1 }); // add dns server
+            f.add(new byte[] { 255 }); // add end
 
             d.options = new byte[f.size];
             for (int i = 0; i < f.size; i++)
             {
-                d.options[i] = f.contents[i];
+                d.options[i] = f.data[i];
             }
             //
             send(d);
@@ -268,8 +268,8 @@ namespace DHCPServer
             DHCPPacket d = new DHCPPacket();
             d.Init();
             d.op = 2;
-            d.htype = (byte)ARPparamEnums.IEEE_8023_Ethernet;
-            d.hlen = (byte)HardwareAddressLengthEnums.IEEE_8023_Ethernet;
+            d.htype = 1;
+            d.hlen = 6;
             d.hops = 0;
             for (int i = 0; i < e.xid.Length; i++)
             {
@@ -293,21 +293,21 @@ namespace DHCPServer
                 d.chaddr[i] = e.chaddr[i];
             }           
 
-            DHCPOption f = new DHCPOption();
+            option f = new option();
 
-            f.Add(new byte[] { 99, 139, 83, 99 }); // add dhcp magic option
-            f.Add(new byte[] { 53, 1, 2 }); // add messeage type dhcp offer
-            f.Add(new byte[] { 54, 4, 192, 168, 1, 1 }); // add dhcp server identify
-            f.Add(new byte[] { 51, 4, 120, 0, 0, 0 }); // add ip lease time (120 s)
-            f.Add(new byte[] { 1, 4, 255, 255, 255, 0 }); // add subnetmask
-            f.Add(new byte[] { 3, 4, 192, 168, 1, 1 }); // add defualt gateway
-            f.Add(new byte[] { 6, 4, 192, 168, 1, 1 }); // add dns server
-            f.Add(new byte[] { 255 }); // add end
+            f.add(new byte[] { 99, 139, 83, 99 }); // add dhcp magic option
+            f.add(new byte[] { 53, 1, 2 }); // add messeage type dhcp offer
+            f.add(new byte[] { 54, 4, 192, 168, 1, 1 }); // add dhcp server identify
+            f.add(new byte[] { 51, 4, 120, 0, 0, 0 }); // add ip lease time (120 s)
+            f.add(new byte[] { 1, 4, 255, 255, 255, 0 }); // add subnetmask
+            f.add(new byte[] { 3, 4, 192, 168, 1, 1 }); // add defualt gateway
+            f.add(new byte[] { 6, 4, 192, 168, 1, 1 }); // add dns server
+            f.add(new byte[] { 255 }); // add end
 
             d.options = new byte[f.size];
             for (int i = 0; i < f.size; i++)
             {
-                d.options[i] = f.contents[i];
+                d.options[i] = f.data[i];
             }
             //
             send(d);
@@ -316,7 +316,7 @@ namespace DHCPServer
         void display(DHCPPacket d)
         {
             // Hien thi goi tin dhcp vua nhan duoc len man hinh
-            richTextBox1.Text += d.ToString() + "\r\n";
+            richTextBox1.Text += d.ToText() + "\r\n";
         }
 
         private void button1_Click(object sender, EventArgs e)

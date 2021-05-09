@@ -40,10 +40,6 @@ namespace DHCPPacketNamespace
 				   |                          options (variable)                   |
 				   +---------------------------------------------------------------+
 	*/
-
-	/// <summary>
-	/// <para>Khởi tạo 1 đối tượng có cấu trúc tương tự gói tin DHCP</para>
-	/// </summary>
 	public class DHCPPacket
 	{
 		/// <summary> 
@@ -63,7 +59,7 @@ namespace DHCPPacketNamespace
 		/// <summary>
 		/// <para>Octet: 1</para>
 		/// <para>Hardware address length. Eg: length of MACID</para>
-		/// <para>See HardwareAddressLengthEnums</para>
+		/// <para>See HardwareAddLengthEnums</para>
 		/// </summary>
 		public byte hlen;
 
@@ -144,14 +140,6 @@ namespace DHCPPacketNamespace
 		/// </summary>
 		public byte[] options;
 
-		/// <summary>
-		/// <para>Total length from opcode-field to file-field (thus Options-field not included) is 236 bytes</para>
-		/// </summary>
-		private const int DHCP_PACKET_FIXED_LENGTH_WITHOUT_OPTION = 236;
-
-		/// <summary>
-		/// <para>Khởi tạo một object DHCP Packet mới.</para>
-		/// </summary> 
 		public void Init()
 		{
 			this.xid = new byte[4];
@@ -166,11 +154,6 @@ namespace DHCPPacketNamespace
 			this.file = new byte[128];
 		}
 
-		/// <summary>
-		/// <para>Hàm dùng để chuyển mảng bytes nhận được thành 1 object có kiểu DHCPPacket</para>
-		/// </summary>
-		/// <param name="data">Là chuỗi bytes nhận được từ client/server</param>
-		/// <returns>Trả về một biến kiểu <c>bool</c> để xác định việc chuyển đổi có thành công hay không</returns>
 		public bool BytesToDHCPPacket(byte[] data)
 		{
 			System.IO.MemoryStream stm = new System.IO.MemoryStream(data, 0, data.Length);
@@ -178,24 +161,24 @@ namespace DHCPPacketNamespace
 			try
 			{
 				//read data
-				this.op = rdr.ReadByte();			//độ dài 1 byte
-				this.htype = rdr.ReadByte();		//độ dài 1 byte
-				this.hlen = rdr.ReadByte();			//độ dài 1 byte
-				this.hops = rdr.ReadByte();         //độ dài 1 byte
-				this.xid = rdr.ReadBytes(4);        //độ dài 4 bytes
-				this.secs = rdr.ReadBytes(2);       //độ dài 2 bytes
-				this.flags = rdr.ReadBytes(2);      //độ dài 2 bytes
-				this.ciaddr = rdr.ReadBytes(4);		//độ dài 4 bytes
-				this.yiaddr = rdr.ReadBytes(4);     //độ dài 4 bytes
-				this.siaddr = rdr.ReadBytes(4);     //độ dài 4 bytes
-				this.giaddr = rdr.ReadBytes(4);     //độ dài 4 bytes
-				this.chaddr = rdr.ReadBytes(16);    //độ dài 16 bytes
-				this.sname = rdr.ReadBytes(64);     //độ dài 64 bytes
-				this.file = rdr.ReadBytes(128);     //độ dài 128 bytes
-				
-				
-				//The rest data is DHCP Options partition
-				this.options = rdr.ReadBytes(data.Length - DHCP_PACKET_FIXED_LENGTH_WITHOUT_OPTION);
+				this.op = rdr.ReadByte();
+				this.htype = rdr.ReadByte();
+				this.hlen = rdr.ReadByte();
+				this.hops = rdr.ReadByte();
+				this.xid = rdr.ReadBytes(4);
+				this.secs = rdr.ReadBytes(2);
+				this.flags = rdr.ReadBytes(2);
+				this.ciaddr = rdr.ReadBytes(4);
+				this.yiaddr = rdr.ReadBytes(4);
+				this.siaddr = rdr.ReadBytes(4);
+				this.giaddr = rdr.ReadBytes(4);
+				this.chaddr = rdr.ReadBytes(16);
+				this.sname = rdr.ReadBytes(64);
+				this.file = rdr.ReadBytes(128);
+				//read the rest of the data, which shall determine the dhcp
+
+				//options
+				this.options = rdr.ReadBytes(data.Length - 236);
 				
 			}
 			catch (Exception ex)
@@ -206,48 +189,37 @@ namespace DHCPPacketNamespace
 			return true;
 		}
 
-		/// <summary>
-		/// <para>Hàm dùng để copy mảng bytes từ srcArr vào destArr từ vị trí AddLocationIndex trên destArr</para>
-		/// </summary>
-		/// <param name="destArr">Mảng đích</param>
-		/// <param name="srcArr">Mảng nguồn</param>
-		/// <param name="AddLocationIndex">Ví trí trên destArr (Mảng đích) bắt đầu copy vào</param>
-		/// <returns>Vị trí liền sau vị trí cuối cùng được thêm trên destArr (Mảng đích)</returns>
-		private int AddArrayToArray(byte[] destArr, byte[] srcArr, int AddLocationIndex)
+		public int add(byte[] a, byte[] b, int index)
         {
-			for (int i = 0; i < srcArr.Length; i++)
+			for (int i = 0; i < b.Length; i++)
             {
-				destArr[AddLocationIndex++] = srcArr[i];
+				a[index++] = b[i];
             }
-			return AddLocationIndex;
+			return index;
         }
 		
-		/// <summary>
-		/// <para>Chuyển đối tượng kiểu DHCPPacket hiện tại thành mảng bytes để gửi đi</para>
-		/// </summary>
-		/// <returns>Mảng bytes sau chuyển đổi</returns>
 		public byte[] DHCPPacketToBytes()
 		{
 			byte[] returnValue;
 
 			try
 			{
-				returnValue = new byte[DHCP_PACKET_FIXED_LENGTH_WITHOUT_OPTION + this.options.Length];
+				returnValue = new byte[236 + options.Length];
 				returnValue[0] = op;
 				returnValue[1] = htype;
 				returnValue[2] = hlen;
 				returnValue[3] = hops;
-				int i = AddArrayToArray(returnValue, xid, 4);
-				i = AddArrayToArray(returnValue, secs, i);
-				i = AddArrayToArray(returnValue, flags, i);
-				i = AddArrayToArray(returnValue, ciaddr, i);
-				i = AddArrayToArray(returnValue, yiaddr, i);
-				i = AddArrayToArray(returnValue, siaddr, i);
-				i = AddArrayToArray(returnValue, giaddr, i);
-				i = AddArrayToArray(returnValue, chaddr, i);
-				i = AddArrayToArray(returnValue, sname, i);
-				i = AddArrayToArray(returnValue, file, i);
-				i = AddArrayToArray(returnValue, options, i);
+				int i = add(returnValue, xid, 4);
+				i = add(returnValue, secs, i);
+				i = add(returnValue, flags, i);
+				i = add(returnValue, ciaddr, i);
+				i = add(returnValue, yiaddr, i);
+				i = add(returnValue, siaddr, i);
+				i = add(returnValue, giaddr, i);
+				i = add(returnValue, chaddr, i);
+				i = add(returnValue, sname, i);
+				i = add(returnValue, file, i);
+				i = add(returnValue, options, i);
 				return returnValue;
 			}
 			catch (Exception ex)
@@ -260,49 +232,36 @@ namespace DHCPPacketNamespace
 			}
 			return returnValue;
 		}
-		
-		/// <summary>
-		/// <para>Encode một mảng bytes sang chuỗi hexa để hiện thị</para>
-		/// </summary>
-		/// <param name="byteArr">Mảng bytes đầu vào</param>
-		/// <returns>Biểu diễn hexa của mảng bytes đã cho</returns>
-		private static string ByteArrayToHexString(byte[] byteArr)
+		public static string ByteArrayToString(byte[] ba)
 		{
-			StringBuilder hex = new StringBuilder(byteArr.Length * 2);
-			foreach (byte b in byteArr)
+			StringBuilder hex = new StringBuilder(ba.Length * 2);
+			foreach (byte b in ba)
 				hex.AppendFormat("{0:x2}", b);
 			return hex.ToString();
 		}
 
-		/// <summary>
-		/// <para>Encode đối tượng DHCPPacket thành chuỗi để hiển thị</para>
-		/// </summary>
-		/// <returns>Chuỗi biểu diễn DHCPPacket object</returns>
-		public override string ToString()
+		public string ToText()
 		{
 			string text = "";
+			// Chuyen sang text de hien thi
 			text += "op(1): " + op.ToString("X") + " htype(1): " + htype.ToString("X") + " hlen(1): " +hlen.ToString("X") + " hops(1): " + hops.ToString("X") + "\r\n";
-			text += "xid(4): " + ByteArrayToHexString(xid) + "\r\n";
-			text += "secs(2): " + ByteArrayToHexString(secs) + "\r\n";
-			text += "flags(2): " + ByteArrayToHexString(flags) + "\r\n";
-			text += "ciaddr(4): " + ByteArrayToHexString(ciaddr) + "\r\n";
-			text += "yiaddr(4): " + ByteArrayToHexString(yiaddr) + "\r\n";
-			text += "siaddr(4): " + ByteArrayToHexString(siaddr) + "\r\n";
-			text += "giaddr(4): " + ByteArrayToHexString(giaddr) + "\r\n";
-			text += "chaddr(16): " + ByteArrayToHexString(chaddr) + "\r\n";
-			text += "sname(64): " + ByteArrayToHexString(sname) + "\r\n";
-			text += "file(128): " + ByteArrayToHexString(file) + "\r\n";
-			text += "options(): " + ByteArrayToHexString(options) + "\r\n";
+			text += "xid(4): " + ByteArrayToString(xid) + "\r\n";
+			text += "secs(2): " + ByteArrayToString(secs) + "\r\n";
+			text += "flags(2): " + ByteArrayToString(flags) + "\r\n";
+			text += "ciaddr(4): " + ByteArrayToString(ciaddr) + "\r\n";
+			text += "yiaddr(4): " + ByteArrayToString(yiaddr) + "\r\n";
+			text += "siaddr(4): " + ByteArrayToString(siaddr) + "\r\n";
+			text += "giaddr(4): " + ByteArrayToString(giaddr) + "\r\n";
+			text += "chaddr(16): " + ByteArrayToString(chaddr) + "\r\n";
+			text += "sname(64): " + ByteArrayToString(sname) + "\r\n";
+			text += "file(128): " + ByteArrayToString(file) + "\r\n";
+			text += "options(): " + ByteArrayToString(options) + "\r\n";
 			return text;
 		}
 
-		/// <summary>
-		/// <para>Tách trường DHCP Options trong đối tượng hiện tại thành danh sách các DHCP Option riêng biệt</para>
-		/// </summary>
-		/// <returns>Danh sách chứa các DHCP Option được tách</returns>
-		public List<byte[]> DHCPOptionsSplit()
+		public List<byte[]> optionsplit()
         {
-			List<byte[]> returnDHCPOptionsList = new List<byte[]>();
+			List<byte[]> ret = new List<byte[]>();
 			for (int i = 4; i < options.Length; i++)
             {
 				if (options[i] == 255)
@@ -316,9 +275,9 @@ namespace DHCPPacketNamespace
 					tmp[j] = options[i + j];
                 }
 				i += (size - 1);
-				returnDHCPOptionsList.Add(tmp);
+				ret.Add(tmp);
             }
-			return returnDHCPOptionsList;
+			return ret;
         }
 	}
 
@@ -356,7 +315,7 @@ namespace DHCPPacketNamespace
 		LocalNet_IBMPCNet_or_SYTEKLocalNET = 12
 	}
 
-	public enum HardwareAddressLengthEnums
+	public enum HardwareAddLengthEnums
 	{
 		DIX_Ethernet = 6,
 		IEEE_8023_Ethernet = 6,
@@ -494,41 +453,22 @@ namespace DHCPPacketNamespace
 		DHCPINFORM = 8
 	}
 
-	/// <summary>
-	/// <para>Khởi tạo đối tượng mô tả trường Option trong DHCP packet</para>
-	/// </summary>
-	public class DHCPOption
+	public class option
     {
-		private const int DHCP_OPTIONS_MINIMUM_LENGTH = 312;
-
-		/// <summary>
-		/// <para>Chuỗi bytes thể hiện các Options trong trường DHCP Options</para>
-		/// </summary>
-		public byte[] contents;
-
-		/// <summary>
-		/// <para>Tổng độ dài các Options</para>
-		/// </summary>
+		public byte[] data;
 		public int size;
 
-		/// <summary>
-		/// <para>Khởi tạo đối tượng với kích thước tối đa là DHCP_OPTIONS_MINIMUM_LENGTH (312 bytes). Nếu nhiều hơn chưa handle :)</para>
-		/// </summary>
-		public DHCPOption()
+		public option()
         {
-			this.contents = new byte[DHCP_OPTIONS_MINIMUM_LENGTH];
-			this.size = 0;
+			data = new byte[376];
+			size = 0;
         }
 
-		/// <summary>
-		/// <para>Thêm một Option vào DHCP Options</para>
-		/// </summary>
-		/// <param name="DataToAddArr">Chuỗi byte thể hiện 1 option cần thêm vào</param>
-		public void Add(byte[] DataToAddArr)
+		public void add(byte[] d)
         {
-			for (int i = 0; i < DataToAddArr.Length; i++)
+			for (int i = 0; i < d.Length; i++)
             {
-				this.contents[this.size++] = DataToAddArr[i];
+				data[size++] = d[i];
             }
         }
 
