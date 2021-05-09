@@ -104,6 +104,28 @@ namespace DHCPServer
                 {
                     if (o[i][2] == 1)
                     {
+                        int loop = 20;
+                        while (loop >= 0)
+                        {
+                            Random _random = new Random();
+                            int j = (byte)_random.Next(2, 254);
+                            loop--;
+                            IPAddress g = new IPAddress(new byte[] { 192, 168, 1, (byte)j });
+                            bool flag = true;
+                            for (int z = 0; z < table.Count(); z++)
+                            {
+                                if (g.ToString() == table[z].ip)
+                                {
+                                    flag = false;
+                                    break;
+                                }
+                            }
+                            if (flag)
+                            {
+                                sendoffer(d, g);
+                                return;
+                            }
+                        }    
                         for (int j = 2; j < 254; j++)
                         {
                             IPAddress g = new IPAddress(new byte[] { 192, 168, 1, (byte)j });
@@ -119,6 +141,7 @@ namespace DHCPServer
                             if (flag)
                             {
                                 sendoffer(d, g);
+                                return;
                             }
                         }
                     }
@@ -224,7 +247,7 @@ namespace DHCPServer
             f.add(new byte[] { 99, 139, 83, 99 }); // add dhcp magic option
             f.add(new byte[] { 53, 1, 5 }); // add messeage type dhcp ack
             f.add(new byte[] { 54, 4, 192, 168, 1, 1 }); // add dhcp server identify
-            f.add(new byte[] { 51, 4, 0, 0, 0, 120 }); // add ip lease time (120 s)
+            f.add(new byte[] { 51, 4, 120, 0, 0, 0 }); // add ip lease time (120 s)
             f.add(new byte[] { 1, 4, 255, 255, 255, 0 }); // add subnetmask
             f.add(new byte[] { 3, 4, 192, 168, 1, 1 }); // add defualt gateway
             f.add(new byte[] { 6, 4, 192, 168, 1, 1 }); // add dns server
