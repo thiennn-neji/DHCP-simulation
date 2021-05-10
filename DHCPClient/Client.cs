@@ -78,7 +78,7 @@ namespace DHCPClient
                 if (haveip) // Neu dang co ip thi moi kiem tra
                 {
                     Int64 epoch = (int)(DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalSeconds; // Lay thoi gian hien tai
-                    if (time - epoch <= 30) // neu thoi gian het han - thoi gian hien tai <= 30s
+                    if (time - epoch <= 60) // neu thoi gian het han - thoi gian hien tai <= 30s
                     {
                         // viet ham
                         sendrequest_Renew(); // gui goi tin gia han
