@@ -81,7 +81,7 @@ namespace DHCPClient
                     if (time - epoch <= 30) // neu thoi gian het han - thoi gian hien tai <= 30s
                     {
                         // viet ham
-                        sendrequest_Renew(dhcpserver); // gui goi tin gia han
+                        sendrequest_Renew(); // gui goi tin gia han
                     }
                 }
                 Thread.Sleep(15000); // ngu 15s
@@ -286,7 +286,7 @@ namespace DHCPClient
             send(d);
         }
 
-        void sendrequest_Renew(byte[] dhcpserver)
+        void sendrequest_Renew()
         {
             // send dhcp request
             DHCPPacket d = new DHCPPacket();
@@ -312,9 +312,7 @@ namespace DHCPClient
             option f = new option();
 
             f.add(new byte[] { 99, 139, 83, 99 }); // add dhcp magic option
-            f.add(new byte[] { 53, 1, 3 }); // add messeage type dhcp request
-            f.add(new byte[] { 54, 4 }); // add dhcp server identify
-            f.add(dhcpserver); // add dhcp server identify            
+            f.add(new byte[] { 53, 1, 3 }); // add messeage type dhcp request                   
             f.add(new byte[] { 55, 3, 1, 3, 6 }); // add parament request list
             f.add(new byte[] { 255 }); // add end
 
@@ -336,7 +334,7 @@ namespace DHCPClient
         {
             if (haveip)
             {
-                sendrequest_Renew(dhcpserver);
+                sendrequest_Renew();
             }
         }
 

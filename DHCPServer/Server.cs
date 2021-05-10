@@ -87,7 +87,7 @@ namespace DHCPServer
         {
             // Xu li goi tin dhcp
             List<byte[]> o = d.optionsplit();
-            for (int i = 0; i < o.Count(); i++) // dhcp server identify
+            for (int i = 0; i < o.Count(); i++) // dhcp server identify khi goi request_new hoac release
             {
                 if (o[i][0] == 54)
                 {
@@ -104,6 +104,20 @@ namespace DHCPServer
                 {
                     if (o[i][2] == 1) // xac dinh dhcp discover
                     {
+                        byte[] Mc = new byte[d.hlen];
+                        for (int j = 0; j < d.hlen; j++)
+                        {
+                            Mc[j] = d.chaddr[j];
+                        }
+                        string mc = ByteArrayToString(Mc);
+                        for (int z = 0; z < table.Count(); z++)
+                        {                            
+                            if (mc == table[z].macaddress)
+                            {
+                                sendoffer(d, IPAddress.Parse(table[z].ip));
+                                return;
+                            }
+                        }
                         int loop = 20;
                         while (loop >= 0)
                         {
