@@ -255,7 +255,12 @@ namespace DHCPPacketNamespace
 			text += "chaddr(16): " + ByteArrayToString(chaddr) + "\r\n";
 			text += "sname(64): " + ByteArrayToString(sname) + "\r\n";
 			text += "file(128): " + ByteArrayToString(file) + "\r\n";
-			text += "options(): " + ByteArrayToString(options) + "\r\n";
+			text += "options(): " + ByteArrayToString(new byte[] { options[0], options[1], options[2], options[3] }) + "\r\n";
+			List<byte[]> g = this.optionsplit();
+			for (int i = 0; i < g.Count(); i++)
+            {
+				text += ByteArrayToString(g[i]) + "\r\n";
+            }
 			return text;
 		}
 
