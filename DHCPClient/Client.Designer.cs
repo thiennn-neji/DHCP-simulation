@@ -83,7 +83,7 @@ namespace DHCPClient
             // 
             // rtbMess
             // 
-            this.rtbMess.Location = new System.Drawing.Point(18, 145);
+            this.rtbMess.Location = new System.Drawing.Point(18, 102);
             this.rtbMess.Name = "rtbMess";
             this.rtbMess.Size = new System.Drawing.Size(805, 407);
             this.rtbMess.TabIndex = 2;
@@ -91,6 +91,7 @@ namespace DHCPClient
             // 
             // rtbPara
             // 
+            this.rtbPara.Font = new System.Drawing.Font("Microsoft Sans Serif", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.rtbPara.Location = new System.Drawing.Point(841, 145);
             this.rtbPara.Name = "rtbPara";
             this.rtbPara.Size = new System.Drawing.Size(318, 399);

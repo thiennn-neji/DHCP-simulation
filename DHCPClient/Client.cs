@@ -205,7 +205,7 @@ namespace DHCPClient
                              .Where(x => x % 2 == 0)
                              .Select(x => Convert.ToByte(hex.Substring(x, 2), 16))
                              .ToArray();
-        } // chuyen doi tu string sang byte stack over flow
+        } // chuyen doi tu string sang byte
 
         public static string ByteArrayToString(byte[] ba)
         {
@@ -213,7 +213,7 @@ namespace DHCPClient
             foreach (byte b in ba)
                 hex.AppendFormat("{0:x2}", b);
             return hex.ToString();
-        } // Chuyen tu byte array sang string stack over flow
+        } // Chuyen tu byte array sang string
 
         void SendDiscover()
         {
