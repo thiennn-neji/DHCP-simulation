@@ -44,20 +44,24 @@ namespace DHCPClient
             CheckForIllegalCrossThreadCalls = false;
 
             udpclient = new UdpClient(6700); // Mo port
+            //Thread dung de lang nghe 
+            Listening_thread = new Thread(new ThreadStart(Listening));
+            Listening_thread.IsBackground = true;
+            Listening_thread.Start();
 
-            t = new Thread(new ThreadStart(listening));
-            t.IsBackground = true;
-            t.Start();
-            t2 = new Thread(new ThreadStart(display2));
-            t2.IsBackground = true;
-            t2.Start();
+            //Thread dung de hien thi parameter cua client
+            Display_Para_thread = new Thread(new ThreadStart(Display_Parameter));
+            Display_Para_thread.IsBackground = true;
+            Display_Para_thread.Start();
+
+            //Thread dung de tu dong gia han ip khi het thoi gian 
             time = 0;
-            t1 = new Thread(new ThreadStart(auto_extend));
-            t1.IsBackground = true;
-            t1.Start();            
+            AutoExtend_thread = new Thread(new ThreadStart(Auto_Extend));
+            AutoExtend_thread.IsBackground = true;
+            AutoExtend_thread.Start();            
             haveip = false; // Chua co ip            
 
-            dhcpserver = new byte[] { 0, 0, 0, 0 }; // Dia chi ip cua server dhcp
+            DHCPServer_IP = new byte[] { 0, 0, 0, 0 }; // Dia chi ip cua server dhcp
         }
 
         IPAddress ip; // Ip hien co cua client
@@ -66,12 +70,12 @@ namespace DHCPClient
         IPAddress dns; // dns server
         UdpClient udpclient; // cong ip nhan va gui goi tin dhcp
         Int64 time; // thoi gian het han cua ip
-        Thread t, t1, t2; // Luong t su dung de lang nghe doi dhcp, t1 su dung de cap nhat thong tin (display2), t2 su dung de kiem tra gia han
+        Thread Listening_thread, AutoExtend_thread, Display_Para_thread; // Luong t su dung de lang nghe doi dhcp, t1 su dung de cap nhat thong tin (display2), t2 su dung de kiem tra gia han
         bool haveip; // true neu dang co ip, false neu chua co ip
         byte[] MacAddr; // chua mac address
-        byte[] dhcpserver; // chua dia chi ip chua server
+        byte[] DHCPServer_IP; // chua dia chi ip cua server
 
-        void auto_extend() // tu dong gia han ip
+        void Auto_Extend() // tu dong gia han ip
         {
             while (true)
             {
@@ -81,23 +85,23 @@ namespace DHCPClient
                     if (time - epoch <= 60) // neu thoi gian het han - thoi gian hien tai <= 30s
                     {
                         // viet ham
-                        sendrequest_Renew(); // gui goi tin gia han
+                        Send_DHCPRequest_Renew(); // gui goi tin gia han
                     }
                 }
                 Thread.Sleep(15000); // ngu 15s
             }
         }
 
-        void listening() // Lang nghe goi dhcp
+        void Listening() // Lang nghe goi dhcp
         {            
             while (true)
             {
                 IPEndPoint IpEnd = new IPEndPoint(IPAddress.Any, 0);
                 Byte[] recvBytes = udpclient.Receive(ref IpEnd);
-                DHCPPacket d = new DHCPPacket();
-                d.BytesToDHCPPacket(recvBytes); // chuyen goi tin tu dang byte sang dang DHCPPacket
-                display1(d); // Hien thi goi len mang hinh
-                solve(d); // xu li goi vua nhan
+                DHCPPacket packet = new DHCPPacket();
+                packet.BytesToDHCPPacket(recvBytes); // chuyen goi tin tu dang byte sang dang DHCPPacket
+                Display_Message(packet); // Hien thi goi len mang hinh
+                HandlePacket(packet); // xu li goi vua nhan
             }
         }
 
@@ -105,59 +109,59 @@ namespace DHCPClient
         {
             if (haveip) // Neu ma co ip roi thi phai gui release roi moi gui discover
             {
-                sendrelease();
+                Send_DHCPRelease();
             }            
             SendDiscover(); // gui goi tin dhcp discover
         }
 
-        void solve(DHCPPacket d)
+        void HandlePacket(DHCPPacket packet)
         {
             // Xu li khi nhan goi DHCP tu server
-            List<byte[]> o = d.optionsplit();
-            for (int i = 0; i < o.Count(); i++)
+            List<byte[]> Option = packet.optionsplit();
+            for (int i = 0; i < Option.Count(); i++)
             {
-                if (o[i][0] == 53) // dhcp messeage type
+                if (Option[i][0] == 53) // dhcp messeage type
                 {
-                    if (o[i][2] == 2) // xac dinh dhcp offer
+                    if (Option[i][2] == 2) // xac dinh dhcp offer
                     {
-                        if (!dhcpserver.SequenceEqual(new byte[] { 0, 0, 0, 0 }))
+                        if (!DHCPServer_IP.SequenceEqual(new byte[] { 0, 0, 0, 0 }))
                         {
                             return; // if we already have dhcp server, so not doing anything
                         }                           
-                        for (int j = 0; j < o.Count(); j++)
+                        for (int j = 0; j < Option.Count(); j++)
                         {
-                            if (o[j][0] == 54) // server dhcp minh da chon
+                            if (Option[j][0] == 54) // server dhcp minh da chon
                             {
                                 for (int z = 0; z < 4; z++)
                                 {
-                                    dhcpserver[z] = o[j][z + 2];
+                                    DHCPServer_IP[z] = Option[j][z + 2];
                                 }
                                 break;
                             }
                         }
-                        sendrequest(d, dhcpserver); // gui goi tin request gom goi dhcp offer va dhcp server da chon
+                        Send_DHCPRequest(packet, DHCPServer_IP); // gui goi tin request gom goi dhcp offer va dhcp server da chon
                     } 
                     else // Xac dinh day la goi dhcp ack (nak coming soon)
                     {
-                        ip = new IPAddress(d.yiaddr);
-                        for (int j = 0; j < o.Count(); j++)
+                        ip = new IPAddress(packet.yiaddr);
+                        for (int j = 0; j < Option.Count(); j++)
                         {
-                            if (o[j][0] == 1) 
+                            if (Option[j][0] == 1) 
                             {
-                                subnetmask = new IPAddress(new byte[] { o[j][2], o[j][3], o[j][4], o[j][5] });
+                                subnetmask = new IPAddress(new byte[] { Option[j][2], Option[j][3], Option[j][4], Option[j][5] });
                             }
-                            if (o[j][0] == 3)
+                            if (Option[j][0] == 3)
                             {
-                                defaultgateway = new IPAddress(new byte[] { o[j][2], o[j][3], o[j][4], o[j][5] });
+                                defaultgateway = new IPAddress(new byte[] { Option[j][2], Option[j][3], Option[j][4], Option[j][5] });
                             }
-                            if (o[j][0] == 6)
+                            if (Option[j][0] == 6)
                             {
-                                dns = new IPAddress(new byte[] { o[j][2], o[j][3], o[j][4], o[j][5] });
+                                dns = new IPAddress(new byte[] { Option[j][2], Option[j][3], Option[j][4], Option[j][5] });
                             }
-                            if (o[j][0] == 51)
+                            if (Option[j][0] == 51)
                             {
                                 Int64 epoch = (int)(DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalSeconds;
-                                time = epoch + BitConverter.ToInt32(new byte[] { o[j][2], o[j][3], o[j][4], o[j][5] }, 0);
+                                time = epoch + BitConverter.ToInt32(new byte[] { Option[j][2], Option[j][3], Option[j][4], Option[j][5] }, 0);
                             }
                         }
                         haveip = true;
@@ -167,13 +171,13 @@ namespace DHCPClient
             }
         }
 
-        void display1(DHCPPacket d)
+        void Display_Message(DHCPPacket packet)
         {
             // Display dhcp messeage
-            rtbMess.Text += d.ToText() + "\r\n"; // d.ToText() la ham tra ve mot string tu DHCPPacket
+            rtbMess.Text += packet.ToText() + "\r\n"; // d.ToText() la ham tra ve mot string tu DHCPPacket
         }
 
-        void display2() // Ham cap nhat thong tin su dung luon t1
+        void Display_Parameter() // Ham cap nhat thong tin su dung luon t1
         {
             while (true)
             {
@@ -192,7 +196,7 @@ namespace DHCPClient
         { // nut release
             if (haveip)
             {
-                sendrelease();
+                Send_DHCPRelease();
             }            
         }
         public static byte[] StringToByteArray(string hex)
@@ -214,166 +218,165 @@ namespace DHCPClient
         void SendDiscover()
         {
             // send dhcp discover
-            DHCPPacket d = new DHCPPacket();
-            d.Init();
-            d.op = 1;
-            d.htype = 1;
-            d.hlen = 6;
-            d.hops = 0;
+            DHCPPacket packet = new DHCPPacket();
+            packet.Init();
+            packet.op = 1;
+            packet.htype = 1;
+            packet.hlen = 6;
+            packet.hops = 0;
             Random _random = new Random();
-            d.xid[0] = (byte)_random.Next(0, 255);
-            d.xid[1] = (byte)_random.Next(0, 255);
-            d.xid[2] = (byte)_random.Next(0, 255);
-            d.xid[3] = (byte)_random.Next(0, 255);
+            packet.xid[0] = (byte)_random.Next(0, 255);
+            packet.xid[1] = (byte)_random.Next(0, 255);
+            packet.xid[2] = (byte)_random.Next(0, 255);
+            packet.xid[3] = (byte)_random.Next(0, 255);
 
             for (int i = 0; i < MacAddr.Length; i++)
             {
-                d.chaddr[i] = MacAddr[i];
+                packet.chaddr[i] = MacAddr[i];
             }
 
-            option f = new option();
+            option op_field = new option();
 
-            f.add(new byte[] { 99, 139, 83, 99 }); // add dhcp magic option
-            f.add(new byte[] { 53, 1, 1 }); // add messeage type dhcp discover
-            f.add(new byte[] { 55, 3, 1, 3, 6 }); // add parament request list
-            f.add(new byte[] { 255 }); // add end
+            op_field.add(new byte[] { 99, 139, 83, 99 }); // add dhcp magic option
+            op_field.add(new byte[] { 53, 1, 1 }); // add messeage type dhcp discover
+            op_field.add(new byte[] { 55, 3, 1, 3, 6 }); // add parament request list
+            op_field.add(new byte[] { 255 }); // add end
 
-            d.options = new byte[f.size];
-            for (int i = 0; i < f.size; i++)
+            packet.options = new byte[op_field.size];
+            for (int i = 0; i < op_field.size; i++)
             {
-                d.options[i] = f.data[i];
+                packet.options[i] = op_field.data[i];
             }
             //
-            send(d);
+            SendPacket(packet);
         }
 
-        void sendrequest(DHCPPacket e, byte[] dhcpserver)
+        void Send_DHCPRequest(DHCPPacket packet, byte[] dhcpserver)
         {
             // send dhcp request
-            DHCPPacket d = new DHCPPacket();
-            d.Init();
-            d.op = 1;
-            d.htype = 1;
-            d.hlen = 6;
-            d.hops = 0;
-            for (int i = 0; i < e.xid.Length; i++)
+            DHCPPacket n_packet = new DHCPPacket();
+            n_packet.Init();
+            n_packet.op = 1;
+            n_packet.htype = 1;
+            n_packet.hlen = 6;
+            n_packet.hops = 0;
+            for (int i = 0; i < packet.xid.Length; i++)
             {
-                d.xid[i] = e.xid[i];
+                n_packet.xid[i] = packet.xid[i];
             }
                         
             for (int i = 0; i < MacAddr.Length; i++)
             {
-                d.chaddr[i] = MacAddr[i];
+                n_packet.chaddr[i] = MacAddr[i];
             }
 
-            option f = new option();
+            option op_field = new option();
 
-            f.add(new byte[] { 99, 139, 83, 99 }); // add dhcp magic option
-            f.add(new byte[] { 53, 1, 3 }); // add messeage type dhcp request
-            f.add(new byte[] { 50, 4 }); // add request ip address
-            f.add(e.yiaddr); // ip address
-            f.add(new byte[] { 54, 4 }); // add dhcp server identify
-            f.add(dhcpserver); // add dhcp server identify            
-            f.add(new byte[] { 55, 3, 1, 3, 6 }); // add parament request list
-            f.add(new byte[] { 255 }); // add end
+            op_field.add(new byte[] { 99, 139, 83, 99 }); // add dhcp magic option
+            op_field.add(new byte[] { 53, 1, 3 }); // add messeage type dhcp request
+            op_field.add(new byte[] { 50, 4 }); // add request ip address
+            op_field.add(packet.yiaddr); // ip address
+            op_field.add(new byte[] { 54, 4 }); // add dhcp server identify
+            op_field.add(dhcpserver); // add dhcp server identify            
+            op_field.add(new byte[] { 55, 3, 1, 3, 6 }); // add parament request list
+            op_field.add(new byte[] { 255 }); // add end
 
-            d.options = new byte[f.size];
-            for (int i = 0; i < f.size; i++)
+            n_packet.options = new byte[op_field.size];
+            for (int i = 0; i < op_field.size; i++)
             {
-                d.options[i] = f.data[i];
+                n_packet.options[i] = op_field.data[i];
             }
             //
-            send(d);
+            SendPacket(n_packet);
         }
 
-        void sendrequest_Renew()
+        void Send_DHCPRequest_Renew()
         {
             // send dhcp request
-            DHCPPacket d = new DHCPPacket();
-            d.Init();
-            d.op = 1;
-            d.htype = 1;
-            d.hlen = 6;
-            d.hops = 0;
+            DHCPPacket packet = new DHCPPacket();
+            packet.Init();
+            packet.op = 1;
+            packet.htype = 1;
+            packet.hlen = 6;
+            packet.hops = 0;
 
             Random _random = new Random();
-            d.xid[0] = (byte)_random.Next(0, 255);
-            d.xid[1] = (byte)_random.Next(0, 255);
-            d.xid[2] = (byte)_random.Next(0, 255);
-            d.xid[3] = (byte)_random.Next(0, 255);
+            packet.xid[0] = (byte)_random.Next(0, 255);
+            packet.xid[1] = (byte)_random.Next(0, 255);
+            packet.xid[2] = (byte)_random.Next(0, 255);
+            packet.xid[3] = (byte)_random.Next(0, 255);
 
-            d.ciaddr = ip.GetAddressBytes();
+            packet.ciaddr = ip.GetAddressBytes();
 
             for (int i = 0; i < MacAddr.Length; i++)
             {
-                d.chaddr[i] = MacAddr[i];
+                packet.chaddr[i] = MacAddr[i];
             }
 
-            option f = new option();
+            option op_field = new option();
 
-            f.add(new byte[] { 99, 139, 83, 99 }); // add dhcp magic option
-            f.add(new byte[] { 53, 1, 3 }); // add messeage type dhcp request                   
-            f.add(new byte[] { 55, 3, 1, 3, 6 }); // add parament request list
-            f.add(new byte[] { 255 }); // add end
+            op_field.add(new byte[] { 99, 139, 83, 99 }); // add dhcp magic option
+            op_field.add(new byte[] { 53, 1, 3 }); // add messeage type dhcp request                   
+            op_field.add(new byte[] { 55, 3, 1, 3, 6 }); // add parament request list
+            op_field.add(new byte[] { 255 }); // add end
 
-            d.options = new byte[f.size];
-            for (int i = 0; i < f.size; i++)
+            packet.options = new byte[op_field.size];
+            for (int i = 0; i < op_field.size; i++)
             {
-                d.options[i] = f.data[i];
+                packet.options[i] = op_field.data[i];
             }
             //
-            send(d);
+            SendPacket(packet);
         }
 
-        private void button1_Click(object sender, EventArgs e) // Clear log button
+        private void btnClearLog_Click(object sender, EventArgs e) // Clear log button
         {
             rtbMess.Text = ""; 
         }
 
-        private void button2_Click(object sender, EventArgs e) // Extend button
+        private void btnExtendIP_Click(object sender, EventArgs e) // Extend button
         {
             if (haveip)
             {
-                sendrequest_Renew();
+                Send_DHCPRequest_Renew();
             }
         }
 
-        void sendrelease()
+        void Send_DHCPRelease()
         {
-            // send dhcp release          
-
-            DHCPPacket d = new DHCPPacket();
-            d.Init();
-            d.op = 1;
-            d.htype = 1;
-            d.hlen = 6;
-            d.hops = 0;
+            // send dhcp release        
+            DHCPPacket packet = new DHCPPacket();
+            packet.Init();
+            packet.op = 1;
+            packet.htype = 1;
+            packet.hlen = 6;
+            packet.hops = 0;
             Random _random = new Random();
-            d.xid[0] = (byte)_random.Next(0, 255);
-            d.xid[1] = (byte)_random.Next(0, 255);
-            d.xid[2] = (byte)_random.Next(0, 255);
-            d.xid[3] = (byte)_random.Next(0, 255);
+            packet.xid[0] = (byte)_random.Next(0, 255);
+            packet.xid[1] = (byte)_random.Next(0, 255);
+            packet.xid[2] = (byte)_random.Next(0, 255);
+            packet.xid[3] = (byte)_random.Next(0, 255);
 
-            d.ciaddr = ip.GetAddressBytes();
+            packet.ciaddr = ip.GetAddressBytes();
 
             for (int i = 0; i < MacAddr.Length; i++)
             {
-                d.chaddr[i] = MacAddr[i];
+                packet.chaddr[i] = MacAddr[i];
             }
-            option f = new option();
+            option op_field = new option();
 
-            f.add(new byte[] { 99, 139, 83, 99 }); // add dhcp magic option
-            f.add(new byte[] { 53, 1, 7 }); // add messeage type dhcp request
-            f.add(new byte[] { 54, 4 }); // add dhcp server identify
-            f.add(dhcpserver);
-            f.add(new byte[] { 255 });
-            d.options = new byte[f.size];
-            for (int i = 0; i < f.size; i++)
+            op_field.add(new byte[] { 99, 139, 83, 99 }); // add dhcp magic option
+            op_field.add(new byte[] { 53, 1, 7 }); // add messeage type dhcp request
+            op_field.add(new byte[] { 54, 4 }); // add dhcp server identify
+            op_field.add(DHCPServer_IP);
+            op_field.add(new byte[] { 255 });
+            packet.options = new byte[op_field.size];
+            for (int i = 0; i < op_field.size; i++)
             {
-                d.options[i] = f.data[i];
+                packet.options[i] = op_field.data[i];
             }
             //
-            send(d);
+            SendPacket(packet);
 
             haveip = false;
             ip = IPAddress.Parse("0.0.0.0");
@@ -381,13 +384,13 @@ namespace DHCPClient
             subnetmask = IPAddress.Parse("255.255.255.255");
             dns = IPAddress.Parse("0.0.0.0");
             time = 0;
-            dhcpserver = new byte[] { 0, 0, 0, 0 };
+            DHCPServer_IP = new byte[] { 0, 0, 0, 0 };
         }
-        void send(DHCPPacket d) // Nhan mot goi DHCP packet chuyen thanh dang byte va gui di
+        void SendPacket(DHCPPacket packet) // Nhan mot goi DHCP packet chuyen thanh dang byte va gui di
         {
             IPAddress ipadd = IPAddress.Parse("255.255.255.255");
             IPEndPoint ipend = new IPEndPoint(ipadd, 6800);
-            byte[] send = d.DHCPPacketToBytes();
+            byte[] send = packet.DHCPPacketToBytes();
             udpclient.Send(send, send.Length, ipend);
             //MessageBox.Show(ByteArrayToString(send));
         }

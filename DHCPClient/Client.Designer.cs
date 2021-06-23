@@ -35,13 +35,14 @@ namespace DHCPClient
             this.lbInfo = new System.Windows.Forms.Label();
             this.rtbMess = new System.Windows.Forms.RichTextBox();
             this.rtbPara = new System.Windows.Forms.RichTextBox();
-            this.button1 = new System.Windows.Forms.Button();
-            this.button2 = new System.Windows.Forms.Button();
+            this.btnClearLog = new System.Windows.Forms.Button();
+            this.btnExtendIP = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // btnRenew
             // 
-            this.btnRenew.Location = new System.Drawing.Point(666, 12);
+            this.btnRenew.Font = new System.Drawing.Font("Segoe Script", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnRenew.Location = new System.Drawing.Point(18, 12);
             this.btnRenew.Name = "btnRenew";
             this.btnRenew.Size = new System.Drawing.Size(157, 73);
             this.btnRenew.TabIndex = 0;
@@ -51,7 +52,8 @@ namespace DHCPClient
             // 
             // btnRelease
             // 
-            this.btnRelease.Location = new System.Drawing.Point(1011, 12);
+            this.btnRelease.Font = new System.Drawing.Font("Segoe Script", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnRelease.Location = new System.Drawing.Point(437, 12);
             this.btnRelease.Name = "btnRelease";
             this.btnRelease.Size = new System.Drawing.Size(148, 73);
             this.btnRelease.TabIndex = 0;
@@ -62,28 +64,28 @@ namespace DHCPClient
             // lbMess
             // 
             this.lbMess.AutoSize = true;
-            this.lbMess.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lbMess.Location = new System.Drawing.Point(233, 57);
+            this.lbMess.Font = new System.Drawing.Font("Segoe Script", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lbMess.Location = new System.Drawing.Point(13, 102);
             this.lbMess.Name = "lbMess";
-            this.lbMess.Size = new System.Drawing.Size(88, 28);
+            this.lbMess.Size = new System.Drawing.Size(95, 33);
             this.lbMess.TabIndex = 1;
             this.lbMess.Text = "Message";
             // 
             // lbInfo
             // 
             this.lbInfo.AutoSize = true;
-            this.lbInfo.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lbInfo.Location = new System.Drawing.Point(928, 102);
+            this.lbInfo.Font = new System.Drawing.Font("Segoe Script", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lbInfo.Location = new System.Drawing.Point(835, 102);
             this.lbInfo.Name = "lbInfo";
-            this.lbInfo.Size = new System.Drawing.Size(139, 28);
+            this.lbInfo.Size = new System.Drawing.Size(172, 33);
             this.lbInfo.TabIndex = 1;
             this.lbInfo.Text = "Parameter Info";
             // 
             // rtbMess
             // 
-            this.rtbMess.Location = new System.Drawing.Point(18, 102);
+            this.rtbMess.Location = new System.Drawing.Point(18, 145);
             this.rtbMess.Name = "rtbMess";
-            this.rtbMess.Size = new System.Drawing.Size(805, 450);
+            this.rtbMess.Size = new System.Drawing.Size(805, 407);
             this.rtbMess.TabIndex = 2;
             this.rtbMess.Text = "";
             // 
@@ -95,33 +97,35 @@ namespace DHCPClient
             this.rtbPara.TabIndex = 3;
             this.rtbPara.Text = "";
             // 
-            // button1
+            // btnClearLog
             // 
-            this.button1.Location = new System.Drawing.Point(492, 12);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(157, 73);
-            this.button1.TabIndex = 4;
-            this.button1.Text = "Clear log";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.btnClearLog.Font = new System.Drawing.Font("Segoe Script", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnClearLog.Location = new System.Drawing.Point(641, 12);
+            this.btnClearLog.Name = "btnClearLog";
+            this.btnClearLog.Size = new System.Drawing.Size(157, 73);
+            this.btnClearLog.TabIndex = 4;
+            this.btnClearLog.Text = "Clear log";
+            this.btnClearLog.UseVisualStyleBackColor = true;
+            this.btnClearLog.Click += new System.EventHandler(this.btnClearLog_Click);
             // 
-            // button2
+            // btnExtendIP
             // 
-            this.button2.Location = new System.Drawing.Point(841, 12);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(157, 73);
-            this.button2.TabIndex = 5;
-            this.button2.Text = "Extend";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
+            this.btnExtendIP.Font = new System.Drawing.Font("Segoe Script", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnExtendIP.Location = new System.Drawing.Point(221, 12);
+            this.btnExtendIP.Name = "btnExtendIP";
+            this.btnExtendIP.Size = new System.Drawing.Size(157, 73);
+            this.btnExtendIP.TabIndex = 5;
+            this.btnExtendIP.Text = "Extend";
+            this.btnExtendIP.UseVisualStyleBackColor = true;
+            this.btnExtendIP.Click += new System.EventHandler(this.btnExtendIP_Click);
             // 
             // Client
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1171, 556);
-            this.Controls.Add(this.button2);
-            this.Controls.Add(this.button1);
+            this.Controls.Add(this.btnExtendIP);
+            this.Controls.Add(this.btnClearLog);
             this.Controls.Add(this.rtbPara);
             this.Controls.Add(this.rtbMess);
             this.Controls.Add(this.lbInfo);
@@ -143,7 +147,7 @@ namespace DHCPClient
         private System.Windows.Forms.Label lbInfo;
         private System.Windows.Forms.RichTextBox rtbMess;
         private System.Windows.Forms.RichTextBox rtbPara;
-        private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.Button btnClearLog;
+        private System.Windows.Forms.Button btnExtendIP;
     }
 }

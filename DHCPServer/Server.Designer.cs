@@ -28,58 +28,59 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.richTextBox1 = new System.Windows.Forms.RichTextBox();
+            this.rtb_DHCPMessage = new System.Windows.Forms.RichTextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
-            this.listView1 = new System.Windows.Forms.ListView();
+            this.lv_IPTable = new System.Windows.Forms.ListView();
             this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.button1 = new System.Windows.Forms.Button();
-            this.button2 = new System.Windows.Forms.Button();
+            this.btnStart = new System.Windows.Forms.Button();
+            this.btnClearLog = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
-            // richTextBox1
+            // rtb_DHCPMessage
             // 
-            this.richTextBox1.Location = new System.Drawing.Point(9, 56);
-            this.richTextBox1.Name = "richTextBox1";
-            this.richTextBox1.Size = new System.Drawing.Size(771, 455);
-            this.richTextBox1.TabIndex = 0;
-            this.richTextBox1.Text = "";
+            this.rtb_DHCPMessage.Location = new System.Drawing.Point(12, 150);
+            this.rtb_DHCPMessage.Name = "rtb_DHCPMessage";
+            this.rtb_DHCPMessage.Size = new System.Drawing.Size(697, 455);
+            this.rtb_DHCPMessage.TabIndex = 0;
+            this.rtb_DHCPMessage.Text = "";
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(205, 9);
+            this.label1.Font = new System.Drawing.Font("Segoe Script", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label1.Location = new System.Drawing.Point(7, 101);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(244, 29);
+            this.label1.Size = new System.Drawing.Size(166, 33);
             this.label1.TabIndex = 2;
-            this.label1.Text = "View DHCP Message";
+            this.label1.Text = "DHCP Message";
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.Location = new System.Drawing.Point(968, 56);
+            this.label2.Font = new System.Drawing.Font("Segoe Script", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label2.Location = new System.Drawing.Point(724, 101);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(104, 29);
+            this.label2.Size = new System.Drawing.Size(100, 33);
             this.label2.TabIndex = 3;
             this.label2.Text = "IP Table";
             // 
-            // listView1
+            // lv_IPTable
             // 
-            this.listView1.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.lv_IPTable.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnHeader1,
             this.columnHeader2,
             this.columnHeader3});
-            this.listView1.HideSelection = false;
-            this.listView1.Location = new System.Drawing.Point(802, 88);
-            this.listView1.Name = "listView1";
-            this.listView1.Size = new System.Drawing.Size(415, 422);
-            this.listView1.TabIndex = 4;
-            this.listView1.UseCompatibleStateImageBehavior = false;
-            this.listView1.View = System.Windows.Forms.View.Details;
+            this.lv_IPTable.Font = new System.Drawing.Font("Segoe Script", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lv_IPTable.HideSelection = false;
+            this.lv_IPTable.Location = new System.Drawing.Point(730, 150);
+            this.lv_IPTable.Name = "lv_IPTable";
+            this.lv_IPTable.Size = new System.Drawing.Size(569, 455);
+            this.lv_IPTable.TabIndex = 4;
+            this.lv_IPTable.UseCompatibleStateImageBehavior = false;
+            this.lv_IPTable.View = System.Windows.Forms.View.Details;
             // 
             // columnHeader1
             // 
@@ -96,37 +97,39 @@
             this.columnHeader3.Text = "Time(refresh after 5s)";
             this.columnHeader3.Width = 150;
             // 
-            // button1
+            // btnStart
             // 
-            this.button1.Location = new System.Drawing.Point(802, 3);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(299, 47);
-            this.button1.TabIndex = 5;
-            this.button1.Text = "StartDHCPServer";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.btnStart.Font = new System.Drawing.Font("Segoe Script", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnStart.Location = new System.Drawing.Point(12, 12);
+            this.btnStart.Name = "btnStart";
+            this.btnStart.Size = new System.Drawing.Size(299, 71);
+            this.btnStart.TabIndex = 5;
+            this.btnStart.Text = "Start DHCP_Server";
+            this.btnStart.UseVisualStyleBackColor = true;
+            this.btnStart.Click += new System.EventHandler(this.btnStart_Click);
             // 
-            // button2
+            // btnClearLog
             // 
-            this.button2.Location = new System.Drawing.Point(481, 3);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(299, 47);
-            this.button2.TabIndex = 6;
-            this.button2.Text = "Clear Log";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
+            this.btnClearLog.Font = new System.Drawing.Font("Segoe Script", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnClearLog.Location = new System.Drawing.Point(372, 12);
+            this.btnClearLog.Name = "btnClearLog";
+            this.btnClearLog.Size = new System.Drawing.Size(299, 71);
+            this.btnClearLog.TabIndex = 6;
+            this.btnClearLog.Text = "Clear Log";
+            this.btnClearLog.UseVisualStyleBackColor = true;
+            this.btnClearLog.Click += new System.EventHandler(this.btnClearLog_Click);
             // 
             // Server
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1229, 556);
-            this.Controls.Add(this.button2);
-            this.Controls.Add(this.button1);
-            this.Controls.Add(this.listView1);
+            this.ClientSize = new System.Drawing.Size(1311, 617);
+            this.Controls.Add(this.btnClearLog);
+            this.Controls.Add(this.btnStart);
+            this.Controls.Add(this.lv_IPTable);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
-            this.Controls.Add(this.richTextBox1);
+            this.Controls.Add(this.rtb_DHCPMessage);
             this.Name = "Server";
             this.Text = "Server";
             this.ResumeLayout(false);
@@ -136,15 +139,15 @@
 
         #endregion
 
-        private System.Windows.Forms.RichTextBox richTextBox1;
+        private System.Windows.Forms.RichTextBox rtb_DHCPMessage;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.ListView listView1;
+        private System.Windows.Forms.ListView lv_IPTable;
         private System.Windows.Forms.ColumnHeader columnHeader1;
         private System.Windows.Forms.ColumnHeader columnHeader2;
         private System.Windows.Forms.ColumnHeader columnHeader3;
-        private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.Button btnStart;
+        private System.Windows.Forms.Button btnClearLog;
     }
 }
 
