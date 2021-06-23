@@ -83,18 +83,18 @@ namespace DHCPClient
             // 
             // rtbMess
             // 
-            this.rtbMess.Location = new System.Drawing.Point(18, 102);
+            this.rtbMess.Location = new System.Drawing.Point(24, 137);
             this.rtbMess.Name = "rtbMess";
-            this.rtbMess.Size = new System.Drawing.Size(805, 407);
+            this.rtbMess.Size = new System.Drawing.Size(774, 407);
             this.rtbMess.TabIndex = 2;
             this.rtbMess.Text = "";
             // 
             // rtbPara
             // 
             this.rtbPara.Font = new System.Drawing.Font("Microsoft Sans Serif", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.rtbPara.Location = new System.Drawing.Point(841, 145);
+            this.rtbPara.Location = new System.Drawing.Point(818, 137);
             this.rtbPara.Name = "rtbPara";
-            this.rtbPara.Size = new System.Drawing.Size(318, 399);
+            this.rtbPara.Size = new System.Drawing.Size(432, 407);
             this.rtbPara.TabIndex = 3;
             this.rtbPara.Text = "";
             // 
@@ -124,7 +124,7 @@ namespace DHCPClient
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1171, 556);
+            this.ClientSize = new System.Drawing.Size(1262, 556);
             this.Controls.Add(this.btnExtendIP);
             this.Controls.Add(this.btnClearLog);
             this.Controls.Add(this.rtbPara);
