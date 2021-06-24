@@ -60,7 +60,9 @@ namespace DHCPClient
             AutoExtend_thread.IsBackground = true;
             AutoExtend_thread.Start();          
             
-            haveip = false; // Chua co ip            
+            haveip = false; // Chua co ip
+
+            autoextend = true;
 
             DHCPServer_IP = new byte[] { 0, 0, 0, 0 }; // Dia chi ip cua server dhcp
         }
@@ -71,8 +73,10 @@ namespace DHCPClient
         IPAddress dns; // dns server
         UdpClient udpclient; // cong ip nhan va gui goi tin dhcp
         Int64 time; // thoi gian het han cua ip
+        Int64 t1, t2; // thoi gian de gia han ip
         Thread Listening_thread, AutoExtend_thread, Display_Para_thread; // Luong t su dung de lang nghe doi dhcp, t1 su dung de cap nhat thong tin (display2), t2 su dung de kiem tra gia han
         bool haveip; // true neu dang co ip, false neu chua co ip
+        bool autoextend;
         byte[] MacAddr; // chua mac address
         byte[] DHCPServer_IP; // chua dia chi ip cua server
 
@@ -80,16 +84,31 @@ namespace DHCPClient
         {
             while (true)
             {
-                if (haveip) // Neu dang co ip thi moi kiem tra
+                if (autoextend) // Neu bat che do tu dong gia han
                 {
-                    Int64 epoch = (int)(DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalSeconds; // Lay thoi gian hien tai
-                    if (time - epoch <= 60) // neu thoi gian het han - thoi gian hien tai <= 30s
+                    if (haveip) // Neu dang co ip thi moi kiem tra
                     {
-                        // viet ham
-                        Send_DHCPRequest_Renew(); // gui goi tin gia han
+                        Int64 epoch = (int)(DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalSeconds; // Lay thoi gian hien tai
+                        if (time - epoch <= 0)
+                        {
+                            haveip = false;
+                            Send_DHCPDiscover();
+                        }
+                        else if (t2 - epoch <= 0)
+                        {
+                            Send_DHCPRequest_Renew(ip); // gui goi tin gia han
+                        }
+                        else if (t1 - epoch <= 0)
+                        {
+                            Send_DHCPRequest_Renew(ip);
+                        }
+                    } 
+                    else
+                    {
+                        Send_DHCPDiscover(); // gui doi tin DHCP Discover
                     }
+                    Thread.Sleep(1000); // ngu 1s
                 }
-                Thread.Sleep(15000); // ngu 15s
             }
         }
 
@@ -127,7 +146,7 @@ namespace DHCPClient
                     {
                         if (!DHCPServer_IP.SequenceEqual(new byte[] { 0, 0, 0, 0 }))
                         {
-                            return; // if we already have dhcp server, so not doing anything
+                            return; // if we already have choose dhcp server, so not doing anything
                         }                           
                         for (int j = 0; j < Option.Count(); j++)
                         {
@@ -141,8 +160,8 @@ namespace DHCPClient
                             }
                         }
                         Send_DHCPRequest(packet, DHCPServer_IP); // gui goi tin request gom goi dhcp offer va dhcp server da chon
-                    } 
-                    else // Xac dinh day la goi dhcp ack (nak coming soon)
+                    }
+                    else if (Option[i][2] == 5) // Xac dinh day la goi dhcp ack
                     {
                         ip = new IPAddress(packet.yiaddr);
                         for (int j = 0; j < Option.Count(); j++)
@@ -162,12 +181,33 @@ namespace DHCPClient
                             if (Option[j][0] == 51)
                             {
                                 Int64 epoch = (int)(DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalSeconds;
-                                time = epoch + BitConverter.ToInt32(new byte[] { Option[j][2], Option[j][3], Option[j][4], Option[j][5] }, 0);
+                                Int64 leasetime = BitConverter.ToInt32(new byte[] { Option[j][2], Option[j][3], Option[j][4], Option[j][5] }, 0);
+                                time = epoch + leasetime;
+                                t1 = epoch + (int)(leasetime * 0.5);
+                                t2 = epoch + (int)(leasetime * 0.875);
                             }
                         }
                         haveip = true;
                     }
-                    break;
+                    else // Goi tin DHCP Nak
+                    {
+                        for (int j = 0; j < Option.Count(); j++)
+                        {
+                            if (Option[j][0] == 54) // server dhcp minh da chon
+                            {
+                                for (int z = 0; z < 4; z++)
+                                {
+                                    if (DHCPServer_IP[z] != Option[j][z + 2]) // Neu khong phai server dhcp da chon
+                                    {
+                                        return;
+                                    }                                    
+                                }
+                                Send_DHCPDiscover(); // Chuyen ve trang thai requesting
+                                return;
+                            }
+                        }
+                    }
+                    return;
                 }
             }
         }
@@ -291,7 +331,7 @@ namespace DHCPClient
             SendPacket(n_packet);
         }
 
-        void Send_DHCPRequest_Renew()
+        void Send_DHCPRequest_Renew(IPAddress ip)
         {
             // send dhcp request
             DHCPPacket packet = new DHCPPacket();
@@ -339,7 +379,11 @@ namespace DHCPClient
         {
             if (haveip)
             {
-                Send_DHCPRequest_Renew();
+                Send_DHCPRequest_Renew(ip);
+            }
+            else
+            {
+
             }
         }
 

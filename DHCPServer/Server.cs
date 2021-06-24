@@ -232,7 +232,7 @@ namespace DHCPServer
                                     table.RemoveAt(j); // xoa goi cu
                                 } else
                                 {
-                                    Send_DHCPNack(packet);
+                                    Send_DHCPNak(packet);
                                     return;
                                 }
                             }
@@ -373,7 +373,7 @@ namespace DHCPServer
             SendPacket(n_packet);
         }
 
-        void Send_DHCPNack(DHCPPacket packet) // take dhcp discover and allocated ip and send offer packet
+        void Send_DHCPNak(DHCPPacket packet) // take dhcp discover and allocated ip and send offer packet
         {
             // send dhcp NACK
             DHCPPacket n_packet = new DHCPPacket();
