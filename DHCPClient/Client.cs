@@ -159,8 +159,8 @@ namespace DHCPClient
                                 for (int z = 0; z < 4; z++)
                                 {
                                     DHCPServer_IP[z] = Option[j][z + 2];
-                                    offer_saved = packet;
                                 }
+                                offer_saved = packet;
                                 break;
                             }
                         }
@@ -395,6 +395,18 @@ namespace DHCPClient
                 fs.Read(load, 0, 376);
                 fs.Close();
                 offer_saved.BytesToDHCPPacket(load);
+                List<byte[]> Option = offer_saved.optionsplit();
+                for (int j = 0; j < Option.Count(); j++)
+                {
+                    if (Option[j][0] == 54) // server dhcp minh da chon
+                    {
+                        for (int z = 0; z < 4; z++)
+                        {
+                            DHCPServer_IP[z] = Option[j][z + 2];
+                        }
+                        break;
+                    }
+                }
                 Send_DHCPRequest(offer_saved, DHCPServer_IP, 3);
             }
         }
