@@ -32,6 +32,12 @@ namespace DHCPServer
         UdpClient udpclient; // udp mo port de nhan dhcp
         Thread Time_thread, Listen_thread; // luong t su dung cho viec nhan goi dhcp, t1 su dung cho viec hien thi
 
+        IPAddress ipsubnet;
+        IPAddress subnetmask;
+        IPAddress dns;
+        IPAddress defaultgateway;
+        IPAddress dhcpserver;
+
         void Listening()
         {
             while (true)
@@ -199,8 +205,8 @@ namespace DHCPServer
                                     table.RemoveAt(j); // xoa goi cu
                                 } else
                                 {
-                                    // send NAK T^T coming soon
-                                    MessageBox.Show("NAK needed");
+                                    Send_DHCPNack(packet);
+                                    return;
                                 }
                             }
                         }
@@ -332,6 +338,51 @@ namespace DHCPServer
             SendPacket(n_packet);
         }
 
+        void Send_DHCPNack(DHCPPacket packet) // take dhcp discover and allocated ip and send offer packet
+        {
+            // send dhcp NACK
+            DHCPPacket n_packet = new DHCPPacket();
+            n_packet.Init();
+            n_packet.op = 2;
+            n_packet.htype = 1;
+            n_packet.hlen = 6;
+            n_packet.hops = 0;
+            for (int i = 0; i < packet.xid.Length; i++)
+            {
+                n_packet.xid[i] = packet.xid[i];
+            }
+
+            for (int i = 0; i < packet.flags.Length; i++)
+            {
+                n_packet.flags[i] = packet.flags[i];
+            }
+
+            for (int i = 0; i < packet.giaddr.Length; i++)
+            {
+                n_packet.giaddr[i] = packet.giaddr[i];
+            }
+
+            for (int i = 0; i < packet.chaddr.Length; i++)
+            {
+                n_packet.chaddr[i] = packet.chaddr[i];
+            }
+
+            option op_field = new option();
+
+            op_field.add(new byte[] { 99, 139, 83, 99 }); // add dhcp magic option
+            op_field.add(new byte[] { 53, 1, 6 }); // add messeage type dhcp nack
+            op_field.add(new byte[] { 54, 4, 192, 168, 1, 1 }); // add dhcp server identify
+            op_field.add(new byte[] { 255 }); // add end
+
+            n_packet.options = new byte[op_field.size];
+            for (int i = 0; i < op_field.size; i++)
+            {
+                n_packet.options[i] = op_field.data[i];
+            }
+            //
+            SendPacket(n_packet);
+        }
+
         void DisplayPacket(DHCPPacket packet) // hien thi goi tin vua nhan ra man hinh
         {
             // Hien thi goi tin dhcp vua nhan duoc len man hinh
@@ -358,6 +409,12 @@ namespace DHCPServer
         private void btnClearLog_Click(object sender, EventArgs e) // clear log button
         {
             rtb_DHCPMessage.Text = "";
+        }
+
+        private void btnSetting_Click(object sender, EventArgs e)
+        {
+            Form f = new Setting();
+            f.ShowDialog();
         }
 
         void SendPacket(DHCPPacket d) // send
