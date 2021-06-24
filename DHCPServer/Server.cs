@@ -11,6 +11,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using DHCPPacketNamespace;
+using networkconfignamespace;
 
 namespace DHCPServer
 {
@@ -26,38 +27,7 @@ namespace DHCPServer
             public string macaddress { get; set; }
             public string ip { get; set; }
             public Int64 time { get; set; }
-        }
-
-        public class networkconfig
-        {
-            public IPAddress networkaddress;
-            public IPAddress subnetmask;
-            public IPAddress dns;
-            public IPAddress defaultgateway;
-            public IPAddress dhcpserver;
-            public IPAddress start;
-            public IPAddress end;
-            public Int32 leasetime;
-            public class staticip
-            {
-                public IPAddress ip;
-                public IPAddress mac;
-            }
-            public List<staticip> static_ip;
-
-            public networkconfig()
-            {
-                networkaddress = IPAddress.Parse("192.168.1.0");
-                subnetmask = IPAddress.Parse("255.255.255.0");
-                dns = IPAddress.Parse("192.168.1.1");
-                defaultgateway = IPAddress.Parse("192.168.1.1");
-                dhcpserver = IPAddress.Parse("192.168.1.1");
-                start = IPAddress.Parse("192.168.1.2");
-                end = IPAddress.Parse("192.168.1.254");
-                static_ip = new List<staticip>();
-                leasetime = 60;
-            }
-        }
+        }       
 
         List<Item> table; // danh sach bang ip va mac de hien thi
         UdpClient udpclient; // udp mo port de nhan dhcp
@@ -449,8 +419,12 @@ namespace DHCPServer
 
         private void btnSetting_Click(object sender, EventArgs e)
         {
-            Form f = new Setting();
+            Setting f = new Setting();
             f.ShowDialog();
+            if (f.isset)
+            {
+                network_config = f.network_config;
+            }
         }
 
         void SendPacket(DHCPPacket d) // send
