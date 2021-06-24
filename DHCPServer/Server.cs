@@ -28,15 +28,42 @@ namespace DHCPServer
             public Int64 time { get; set; }
         }
 
+        public class networkconfig
+        {
+            public IPAddress networkaddress;
+            public IPAddress subnetmask;
+            public IPAddress dns;
+            public IPAddress defaultgateway;
+            public IPAddress dhcpserver;
+            public IPAddress start;
+            public IPAddress end;
+            public Int32 leasetime;
+            public class staticip
+            {
+                public IPAddress ip;
+                public IPAddress mac;
+            }
+            public List<staticip> static_ip;
+
+            public networkconfig()
+            {
+                networkaddress = IPAddress.Parse("192.168.1.0");
+                subnetmask = IPAddress.Parse("255.255.255.0");
+                dns = IPAddress.Parse("192.168.1.1");
+                defaultgateway = IPAddress.Parse("192.168.1.1");
+                dhcpserver = IPAddress.Parse("192.168.1.1");
+                start = IPAddress.Parse("192.168.1.2");
+                end = IPAddress.Parse("192.168.1.254");
+                static_ip = new List<staticip>();
+                leasetime = 120;
+            }
+        }
+
         List<Item> table; // danh sach bang ip va mac de hien thi
         UdpClient udpclient; // udp mo port de nhan dhcp
         Thread Time_thread, Listen_thread; // luong t su dung cho viec nhan goi dhcp, t1 su dung cho viec hien thi
 
-        IPAddress ipsubnet;
-        IPAddress subnetmask;
-        IPAddress dns;
-        IPAddress defaultgateway;
-        IPAddress dhcpserver;
+        networkconfig network_config = new networkconfig();
 
         void Listening()
         {
@@ -65,7 +92,7 @@ namespace DHCPServer
                     }
                 }
                 ShowTime(epoch);
-                Thread.Sleep(5000);
+                Thread.Sleep(1000);
             }
         }
 
@@ -236,57 +263,6 @@ namespace DHCPServer
             }
         }
 
-        void Send_DHCPAck(DHCPPacket packet, IPAddress IP) // take dhcp discover and allocated ip and send offer packet
-        {
-            // send dhcp offer
-            DHCPPacket n_packet = new DHCPPacket();
-            n_packet.Init();
-            n_packet.op = 2;
-            n_packet.htype = 1;
-            n_packet.hlen = 6;
-            n_packet.hops = 0;
-            for (int i = 0; i < packet.xid.Length; i++)
-            {
-                n_packet.xid[i] = packet.xid[i];
-            }
-
-            n_packet.yiaddr = IP.GetAddressBytes();
-
-            for (int i = 0; i < packet.flags.Length; i++)
-            {
-                n_packet.flags[i] = packet.flags[i];
-            }
-
-            for (int i = 0; i < packet.giaddr.Length; i++)
-            {
-                n_packet.giaddr[i] = packet.giaddr[i];
-            }
-
-            for (int i = 0; i < packet.chaddr.Length; i++)
-            {
-                n_packet.chaddr[i] = packet.chaddr[i];
-            }
-
-            option op_field = new option();
-
-            op_field.add(new byte[] { 99, 139, 83, 99 }); // add dhcp magic option
-            op_field.add(new byte[] { 53, 1, 5 }); // add messeage type dhcp ack
-            op_field.add(new byte[] { 54, 4, 192, 168, 1, 1 }); // add dhcp server identify
-            op_field.add(new byte[] { 51, 4, 120, 0, 0, 0 }); // add ip lease time (120 s)
-            op_field.add(new byte[] { 1, 4, 255, 255, 255, 0 }); // add subnetmask
-            op_field.add(new byte[] { 3, 4, 192, 168, 1, 1 }); // add defualt gateway
-            op_field.add(new byte[] { 6, 4, 192, 168, 1, 1 }); // add dns server
-            op_field.add(new byte[] { 255 }); // add end
-
-            n_packet.options = new byte[op_field.size];
-            for (int i = 0; i < op_field.size; i++)
-            {
-                n_packet.options[i] = op_field.data[i];
-            }
-            //
-            SendPacket(n_packet);
-        }
-
         void Send_DHCPOffer(DHCPPacket packet, IPAddress IP) // take dhcp discover and allocated ip and send offer packet
         {
             // send dhcp offer
@@ -322,11 +298,70 @@ namespace DHCPServer
 
             op_field.add(new byte[] { 99, 139, 83, 99 }); // add dhcp magic option
             op_field.add(new byte[] { 53, 1, 2 }); // add messeage type dhcp offer
-            op_field.add(new byte[] { 54, 4, 192, 168, 1, 1 }); // add dhcp server identify
-            op_field.add(new byte[] { 51, 4, 120, 0, 0, 0 }); // add ip lease time (120 s)
-            op_field.add(new byte[] { 1, 4, 255, 255, 255, 0 }); // add subnetmask
-            op_field.add(new byte[] { 3, 4, 192, 168, 1, 1 }); // add defualt gateway
-            op_field.add(new byte[] { 6, 4, 192, 168, 1, 1 }); // add dns server
+            op_field.add(new byte[] { 54, 4 }); // add dhcp server identify
+            op_field.add(network_config.dhcpserver.GetAddressBytes());
+            op_field.add(new byte[] { 51, 4, (byte)(network_config.leasetime), (byte)(network_config.leasetime >> 8), (byte)(network_config.leasetime >> 16), (byte)(network_config.leasetime >> 24) }); // add ip lease time (120 s)
+            op_field.add(new byte[] { 1, 4 }); // add subnetmask
+            op_field.add(network_config.subnetmask.GetAddressBytes());
+            op_field.add(new byte[] { 3, 4 }); // add defualt gateway
+            op_field.add(network_config.defaultgateway.GetAddressBytes());
+            op_field.add(new byte[] { 6, 4 }); // add dns server
+            op_field.add(network_config.dns.GetAddressBytes());
+            op_field.add(new byte[] { 255 }); // add end
+
+            n_packet.options = new byte[op_field.size];
+            for (int i = 0; i < op_field.size; i++)
+            {
+                n_packet.options[i] = op_field.data[i];
+            }
+            //
+            SendPacket(n_packet);
+        }
+
+        void Send_DHCPAck(DHCPPacket packet, IPAddress IP) // take dhcp discover and allocated ip and send offer packet
+        {
+            // send dhcp offer
+            DHCPPacket n_packet = new DHCPPacket();
+            n_packet.Init();
+            n_packet.op = 2;
+            n_packet.htype = 1;
+            n_packet.hlen = 6;
+            n_packet.hops = 0;
+            for (int i = 0; i < packet.xid.Length; i++)
+            {
+                n_packet.xid[i] = packet.xid[i];
+            }
+
+            n_packet.yiaddr = IP.GetAddressBytes();
+
+            for (int i = 0; i < packet.flags.Length; i++)
+            {
+                n_packet.flags[i] = packet.flags[i];
+            }
+
+            for (int i = 0; i < packet.giaddr.Length; i++)
+            {
+                n_packet.giaddr[i] = packet.giaddr[i];
+            }
+
+            for (int i = 0; i < packet.chaddr.Length; i++)
+            {
+                n_packet.chaddr[i] = packet.chaddr[i];
+            }
+
+            option op_field = new option();
+
+            op_field.add(new byte[] { 99, 139, 83, 99 }); // add dhcp magic option
+            op_field.add(new byte[] { 53, 1, 5 }); // add messeage type dhcp ack
+            op_field.add(new byte[] { 54, 4 }); // add dhcp server identify
+            op_field.add(network_config.dhcpserver.GetAddressBytes());
+            op_field.add(new byte[] { 51, 4, (byte)(network_config.leasetime), (byte)(network_config.leasetime >> 8), (byte)(network_config.leasetime >> 16), (byte)(network_config.leasetime >> 24) }); // add ip lease time (120 s)
+            op_field.add(new byte[] { 1, 4 }); // add subnetmask
+            op_field.add(network_config.subnetmask.GetAddressBytes());
+            op_field.add(new byte[] { 3, 4 }); // add defualt gateway
+            op_field.add(network_config.defaultgateway.GetAddressBytes());
+            op_field.add(new byte[] { 6, 4 }); // add dns server
+            op_field.add(network_config.dns.GetAddressBytes());
             op_field.add(new byte[] { 255 }); // add end
 
             n_packet.options = new byte[op_field.size];
@@ -371,7 +406,8 @@ namespace DHCPServer
 
             op_field.add(new byte[] { 99, 139, 83, 99 }); // add dhcp magic option
             op_field.add(new byte[] { 53, 1, 6 }); // add messeage type dhcp nack
-            op_field.add(new byte[] { 54, 4, 192, 168, 1, 1 }); // add dhcp server identify
+            op_field.add(new byte[] { 54, 4 }); // add dhcp server identify
+            op_field.add(network_config.dhcpserver.GetAddressBytes());
             op_field.add(new byte[] { 255 }); // add end
 
             n_packet.options = new byte[op_field.size];

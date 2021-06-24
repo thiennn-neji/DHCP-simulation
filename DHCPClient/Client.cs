@@ -24,7 +24,7 @@ namespace DHCPClient
             defaultgateway = IPAddress.Parse("0.0.0.0");
             dns = IPAddress.Parse("0.0.0.0");
             subnetmask = IPAddress.Parse("255.255.255.255");
-
+            
             var macAddr =
             (
                 from nic in NetworkInterface.GetAllNetworkInterfaces()
@@ -40,7 +40,7 @@ namespace DHCPClient
                 MessageBox.Show("Không tìm thấy card mạng");
                 MacAddr = new byte[] { 0, 0, 0, 0, 0, 0 };
             }  // Gan dia chi mac vao mang MacAddr
-
+            
             CheckForIllegalCrossThreadCalls = false;
 
             udpclient = new UdpClient(6700); // Mo port
@@ -58,7 +58,8 @@ namespace DHCPClient
             time = 0;
             AutoExtend_thread = new Thread(new ThreadStart(Auto_Extend));
             AutoExtend_thread.IsBackground = true;
-            AutoExtend_thread.Start();            
+            AutoExtend_thread.Start();          
+            
             haveip = false; // Chua co ip            
 
             DHCPServer_IP = new byte[] { 0, 0, 0, 0 }; // Dia chi ip cua server dhcp
@@ -111,7 +112,7 @@ namespace DHCPClient
             {
                 Send_DHCPRelease();
             }            
-            SendDiscover(); // gui goi tin dhcp discover
+            Send_DHCPDiscover(); // gui goi tin dhcp discover
         }
 
         void HandlePacket(DHCPPacket packet)
@@ -189,7 +190,7 @@ namespace DHCPClient
                 rtbPara.Text += "Dns server: " + dns.ToString() + "\r\n";
                 rtbPara.Text += "Time remaining: " + Math.Max(time - epoch, 0).ToString() + "s\r\n";
                 rtbPara.Text += "Refresh after 5s\r\n";
-                Thread.Sleep(5000);
+                Thread.Sleep(1000);
             }
         }
         private void btnRelease_Click(object sender, EventArgs e)
@@ -215,7 +216,7 @@ namespace DHCPClient
             return hex.ToString();
         } // Chuyen tu byte array sang string
 
-        void SendDiscover()
+        void Send_DHCPDiscover()
         {
             // send dhcp discover
             DHCPPacket packet = new DHCPPacket();
