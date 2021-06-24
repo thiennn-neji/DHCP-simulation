@@ -12,6 +12,7 @@ using System.Net.Sockets;
 using DHCPPacketNamespace;
 using System.Threading;
 using System.Net.NetworkInformation;
+using System.IO;
 
 namespace DHCPClient
 {
@@ -65,6 +66,8 @@ namespace DHCPClient
             autoextend = false;
 
             DHCPServer_IP = new byte[] { 0, 0, 0, 0 }; // Dia chi ip cua server dhcp
+
+            offer_saved = new DHCPPacket();
         }
 
         IPAddress ip; // Ip hien co cua client
@@ -165,6 +168,19 @@ namespace DHCPClient
                     }
                     else if (Option[i][2] == 5) // Xac dinh day la goi dhcp ack
                     {
+                        FileStream fs;
+                        try
+                        {
+                            fs = new FileStream("IP", FileMode.Create);
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show(ex.Message);
+                            return;
+                        }
+                        byte[] save = offer_saved.DHCPPacketToBytes();
+                        fs.Write(save, 0, save.Length);
+                        fs.Close();
                         ip = new IPAddress(packet.yiaddr);
                         for (int j = 0; j < Option.Count(); j++)
                         {
@@ -231,7 +247,6 @@ namespace DHCPClient
                 rtbPara.Text += "Subnet Mask: " + subnetmask.ToString() + "\r\n";
                 rtbPara.Text += "Dns server: " + dns.ToString() + "\r\n";
                 rtbPara.Text += "Time remaining: " + Math.Max(time - epoch, 0).ToString() + "s\r\n";
-                rtbPara.Text += "Refresh after 5s\r\n";
                 Thread.Sleep(1000);
             }
         }
@@ -354,6 +369,11 @@ namespace DHCPClient
             rtbMess.Text = ""; 
         }
 
+        private void btn_Extend_CheckedChanged(object sender, EventArgs e)
+        {
+            autoextend = btn_Extend.Checked;
+        }
+
         private void btnExtendIP_Click(object sender, EventArgs e) // Extend button
         {
             if (haveip)
@@ -362,7 +382,20 @@ namespace DHCPClient
             }
             else
             {
-
+                FileStream fs;
+                try
+                {
+                    fs = new FileStream("IP", FileMode.Open);
+                }
+                catch (Exception)
+                {
+                    return;
+                }
+                byte[] load = new byte[376];
+                fs.Read(load, 0, 376);
+                fs.Close();
+                offer_saved.BytesToDHCPPacket(load);
+                Send_DHCPRequest(offer_saved, DHCPServer_IP, 3);
             }
         }
 

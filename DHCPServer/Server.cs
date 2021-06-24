@@ -55,7 +55,7 @@ namespace DHCPServer
                 start = IPAddress.Parse("192.168.1.2");
                 end = IPAddress.Parse("192.168.1.254");
                 static_ip = new List<staticip>();
-                leasetime = 120;
+                leasetime = 60;
             }
         }
 
@@ -221,7 +221,7 @@ namespace DHCPServer
                         item.macaddress = s_MacAddress;
                         item.ip = IP.ToString();
                         Int64 epoch = (int)(DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalSeconds; // setup item
-                        item.time = epoch + 120;
+                        item.time = epoch + network_config.leasetime;
 
                         for (int j = 0; j < table.Count(); j++)
                         {
