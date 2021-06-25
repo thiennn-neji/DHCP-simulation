@@ -99,6 +99,10 @@ namespace DHCPClient
                         if (time - epoch <= 0)
                         {
                             haveip = false;
+                            for (int i = 0; i < 4; i++)
+                            {
+                                DHCPServer_IP[i] = 0;
+                            }
                             Send_DHCPDiscover();
                         }
                         else if (t2 - epoch <= 0)
