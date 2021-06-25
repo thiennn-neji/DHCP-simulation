@@ -17,15 +17,7 @@ namespace networkconfignamespace
         public IPAddress start;
         public IPAddress end;
         public Int32 leasetime;
-        public class staticip
-        {
-            public byte[] mac;
-            public IPAddress ip;
-            public staticip()
-            {
-                mac = new byte[6];
-            }
-        }
+        
         public List<staticip> static_ip;
 
         public networkconfig()
@@ -90,6 +82,15 @@ namespace networkconfignamespace
                 static_ip.Add(d);
             }
             leasetime = BitConverter.ToInt32(new byte[] { rdr.ReadByte(), rdr.ReadByte(), rdr.ReadByte(), rdr.ReadByte() }, 0);
+        }
+    }
+    public class staticip
+    {
+        public byte[] mac;
+        public IPAddress ip;
+        public staticip()
+        {
+            mac = new byte[6];
         }
     }
 }

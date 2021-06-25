@@ -67,7 +67,32 @@ namespace DHCPServer
 
         private void btnSetConfig_Click(object sender, EventArgs e)
         {
-
+            try
+            {
+                network_config = new networkconfig();
+                network_config.networkaddress = IPAddress.Parse(tb_NetworkAddress.Text.Trim());
+                network_config.subnetmask = IPAddress.Parse(tb_SubnetMask.Text.Trim());
+                network_config.dns = IPAddress.Parse(tb_DNS.Text.Trim());
+                network_config.dhcpserver = IPAddress.Parse(tb_DHCPServerIP.Text.Trim());
+                network_config.start = IPAddress.Parse(tb_IPStart.Text.Trim());
+                network_config.end = IPAddress.Parse(tb_IPEnd.Text.Trim());
+                network_config.leasetime = Int32.Parse(tb_LeaseTime.Text.Trim());
+                for (int i = 0; i < lv_StaticIP.Items.Count; i++)
+                {
+                    staticip d = new staticip();
+                    d.ip = IPAddress.Parse(lv_StaticIP.Items[i].SubItems[1].Text);
+                    for (int j = 0; j < 6; j++)
+                    {
+                        d.mac[j] = (byte)Convert.ToInt32(lv_StaticIP.Items[i].SubItems[0].Text.Substring(j * 2, 2), 16);
+                    }
+                    network_config.static_ip.Add(d);
+                }
+            } catch (Exception z)
+            {
+                MessageBox.Show(z.Message);
+               return;
+            }
+            
             if (!checkvalid())
             {
                 network_config = new networkconfig();
@@ -82,6 +107,11 @@ namespace DHCPServer
         {
 
             return true;
+        }
+
+        private void btnAddStaticIP_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

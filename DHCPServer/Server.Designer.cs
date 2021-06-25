@@ -79,7 +79,7 @@
             // columnHeader1
             // 
             this.columnHeader1.Text = "Mac";
-            this.columnHeader1.Width = 123;
+            this.columnHeader1.Width = 172;
             // 
             // columnHeader2
             // 

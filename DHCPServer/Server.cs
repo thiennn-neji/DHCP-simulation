@@ -95,7 +95,7 @@ namespace DHCPServer
             {
                 if (Option[i][0] == 54)
                 {
-                    if (Option[i][2] != 192 || Option[i][3] != 168 || Option[i][4] != 1 || Option[i][5] != 1)
+                    if (network_config.dhcpserver != new IPAddress(new byte[] { Option[i][2], Option[i][3], Option[i][4], Option[i][5] }))
                     {
                         return;
                     }
