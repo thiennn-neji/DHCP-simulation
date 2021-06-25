@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.rtb_DHCPMessage = new System.Windows.Forms.RichTextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.lv_IPTable = new System.Windows.Forms.ListView();
@@ -39,15 +38,8 @@
             this.btnClearLog = new System.Windows.Forms.Button();
             this.btnSetting = new System.Windows.Forms.Button();
             this.btnExport = new System.Windows.Forms.Button();
+            this.rtb_DHCPMessage = new System.Windows.Forms.RichTextBox();
             this.SuspendLayout();
-            // 
-            // rtb_DHCPMessage
-            // 
-            this.rtb_DHCPMessage.Location = new System.Drawing.Point(12, 150);
-            this.rtb_DHCPMessage.Name = "rtb_DHCPMessage";
-            this.rtb_DHCPMessage.Size = new System.Drawing.Size(697, 455);
-            this.rtb_DHCPMessage.TabIndex = 0;
-            this.rtb_DHCPMessage.Text = "";
             // 
             // label1
             // 
@@ -143,6 +135,14 @@
             this.btnExport.UseVisualStyleBackColor = true;
             this.btnExport.Click += new System.EventHandler(this.btnExport_Click);
             // 
+            // rtb_DHCPMessage
+            // 
+            this.rtb_DHCPMessage.Location = new System.Drawing.Point(12, 150);
+            this.rtb_DHCPMessage.Name = "rtb_DHCPMessage";
+            this.rtb_DHCPMessage.Size = new System.Drawing.Size(697, 455);
+            this.rtb_DHCPMessage.TabIndex = 0;
+            this.rtb_DHCPMessage.Text = "";
+            // 
             // Server
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -164,8 +164,6 @@
         }
 
         #endregion
-
-        private System.Windows.Forms.RichTextBox rtb_DHCPMessage;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.ListView lv_IPTable;
@@ -176,6 +174,7 @@
         private System.Windows.Forms.Button btnClearLog;
         private System.Windows.Forms.Button btnSetting;
         private System.Windows.Forms.Button btnExport;
+        private System.Windows.Forms.RichTextBox rtb_DHCPMessage;
     }
 }
 
