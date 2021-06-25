@@ -172,15 +172,14 @@ namespace DHCPClient
                         try
                         {
                             fs = new FileStream("IP", FileMode.Create);
+                            byte[] save = offer_saved.DHCPPacketToBytes();
+                            fs.Write(save, 0, save.Length);
+                            fs.Close();
                         }
                         catch (Exception ex)
                         {
-                            MessageBox.Show(ex.Message);
-                            return;
-                        }
-                        byte[] save = offer_saved.DHCPPacketToBytes();
-                        fs.Write(save, 0, save.Length);
-                        fs.Close();
+                            MessageBox.Show(ex.Message, "Can not save offer_packet");
+                        }                        
                         ip = new IPAddress(packet.yiaddr);
                         for (int j = 0; j < Option.Count(); j++)
                         {
@@ -369,9 +368,9 @@ namespace DHCPClient
             rtbMess.Text = ""; 
         }
 
-        private void btn_Extend_CheckedChanged(object sender, EventArgs e)
+        private void btnExtend_CheckedChanged(object sender, EventArgs e)
         {
-            autoextend = btn_Extend.Checked;
+            autoextend = btnExtend.Checked;
         }
 
         private void btnExtendIP_Click(object sender, EventArgs e) // Extend button
@@ -386,28 +385,30 @@ namespace DHCPClient
                 try
                 {
                     fs = new FileStream("IP", FileMode.Open);
+                    byte[] load = new byte[376];
+                    fs.Read(load, 0, 376);
+                    fs.Close();
+                    offer_saved.BytesToDHCPPacket(load);
+                    List<byte[]> Option = offer_saved.optionsplit();
+                    for (int j = 0; j < Option.Count(); j++)
+                    {
+                        if (Option[j][0] == 54) // server dhcp minh da chon
+                        {
+                            for (int z = 0; z < 4; z++)
+                            {
+                                DHCPServer_IP[z] = Option[j][z + 2];
+                            }
+                            break;
+                        }
+                    }
+                    Send_DHCPRequest(offer_saved, DHCPServer_IP, 3);
                 }
-                catch (Exception)
+                catch (Exception z)
                 {
+                    MessageBox.Show(z.Message);
                     return;
                 }
-                byte[] load = new byte[376];
-                fs.Read(load, 0, 376);
-                fs.Close();
-                offer_saved.BytesToDHCPPacket(load);
-                List<byte[]> Option = offer_saved.optionsplit();
-                for (int j = 0; j < Option.Count(); j++)
-                {
-                    if (Option[j][0] == 54) // server dhcp minh da chon
-                    {
-                        for (int z = 0; z < 4; z++)
-                        {
-                            DHCPServer_IP[z] = Option[j][z + 2];
-                        }
-                        break;
-                    }
-                }
-                Send_DHCPRequest(offer_saved, DHCPServer_IP, 3);
+                
             }
         }
 

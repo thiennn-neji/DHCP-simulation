@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
@@ -425,6 +426,26 @@ namespace DHCPServer
             {
                 network_config = f.network_config;
             }
+        }
+
+        private void btnExport_Click(object sender, EventArgs e)
+        {
+            FileStream fs;
+            SaveFileDialog sfd = new SaveFileDialog();
+            sfd.Filter = "config (*.config)|Allfiles (*.*)";
+            sfd.ShowDialog();
+            try
+            {
+                fs = new FileStream(sfd.FileName, FileMode.Create);
+                byte[] save = network_config.toBytes();
+                fs.Write(save, 0, save.Length);
+                fs.Close();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+                return;
+            }            
         }
 
         void SendPacket(DHCPPacket d) // send

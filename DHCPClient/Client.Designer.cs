@@ -37,7 +37,7 @@ namespace DHCPClient
             this.rtbPara = new System.Windows.Forms.RichTextBox();
             this.btnClearLog = new System.Windows.Forms.Button();
             this.btnExtendIP = new System.Windows.Forms.Button();
-            this.btn_Extend = new DHCPClient.RJToggleButton();
+            this.btnExtend = new DHCPClient.RJToggleButton();
             this.label1 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
@@ -122,21 +122,21 @@ namespace DHCPClient
             this.btnExtendIP.UseVisualStyleBackColor = true;
             this.btnExtendIP.Click += new System.EventHandler(this.btnExtendIP_Click);
             // 
-            // btn_Extend
+            // btnExtend
             // 
-            this.btn_Extend.AutoSize = true;
-            this.btn_Extend.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btn_Extend.Location = new System.Drawing.Point(900, 32);
-            this.btn_Extend.MinimumSize = new System.Drawing.Size(70, 35);
-            this.btn_Extend.Name = "btn_Extend";
-            this.btn_Extend.OffBackColor = System.Drawing.Color.Gray;
-            this.btn_Extend.OffToggleColor = System.Drawing.Color.Gainsboro;
-            this.btn_Extend.OnBackColor = System.Drawing.Color.MediumSlateBlue;
-            this.btn_Extend.OnToggleColor = System.Drawing.Color.WhiteSmoke;
-            this.btn_Extend.Size = new System.Drawing.Size(70, 35);
-            this.btn_Extend.TabIndex = 6;
-            this.btn_Extend.UseVisualStyleBackColor = true;
-            this.btn_Extend.CheckedChanged += new System.EventHandler(this.btn_Extend_CheckedChanged);
+            this.btnExtend.AutoSize = true;
+            this.btnExtend.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnExtend.Location = new System.Drawing.Point(900, 32);
+            this.btnExtend.MinimumSize = new System.Drawing.Size(70, 35);
+            this.btnExtend.Name = "btnExtend";
+            this.btnExtend.OffBackColor = System.Drawing.Color.Gray;
+            this.btnExtend.OffToggleColor = System.Drawing.Color.Gainsboro;
+            this.btnExtend.OnBackColor = System.Drawing.Color.MediumSlateBlue;
+            this.btnExtend.OnToggleColor = System.Drawing.Color.WhiteSmoke;
+            this.btnExtend.Size = new System.Drawing.Size(70, 35);
+            this.btnExtend.TabIndex = 6;
+            this.btnExtend.UseVisualStyleBackColor = true;
+            this.btnExtend.CheckedChanged += new System.EventHandler(this.btnExtend_CheckedChanged);
             // 
             // label1
             // 
@@ -154,7 +154,7 @@ namespace DHCPClient
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1262, 556);
             this.Controls.Add(this.label1);
-            this.Controls.Add(this.btn_Extend);
+            this.Controls.Add(this.btnExtend);
             this.Controls.Add(this.btnExtendIP);
             this.Controls.Add(this.btnClearLog);
             this.Controls.Add(this.rtbPara);
@@ -180,7 +180,7 @@ namespace DHCPClient
         private System.Windows.Forms.RichTextBox rtbPara;
         private System.Windows.Forms.Button btnClearLog;
         private System.Windows.Forms.Button btnExtendIP;
-        private RJToggleButton btn_Extend;
+        private RJToggleButton btnExtend;
         private System.Windows.Forms.Label label1;
     }
 }

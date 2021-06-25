@@ -38,6 +38,7 @@
             this.btnStart = new System.Windows.Forms.Button();
             this.btnClearLog = new System.Windows.Forms.Button();
             this.btnSetting = new System.Windows.Forms.Button();
+            this.btnExport = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // rtb_DHCPMessage
@@ -91,7 +92,7 @@
             // columnHeader2
             // 
             this.columnHeader2.Text = "IpAddr";
-            this.columnHeader2.Width = 135;
+            this.columnHeader2.Width = 176;
             // 
             // columnHeader3
             // 
@@ -131,11 +132,23 @@
             this.btnSetting.UseVisualStyleBackColor = true;
             this.btnSetting.Click += new System.EventHandler(this.btnSetting_Click);
             // 
+            // btnExport
+            // 
+            this.btnExport.Font = new System.Drawing.Font("Segoe Script", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnExport.Location = new System.Drawing.Point(980, 12);
+            this.btnExport.Name = "btnExport";
+            this.btnExport.Size = new System.Drawing.Size(299, 71);
+            this.btnExport.TabIndex = 8;
+            this.btnExport.Text = "Export Config";
+            this.btnExport.UseVisualStyleBackColor = true;
+            this.btnExport.Click += new System.EventHandler(this.btnExport_Click);
+            // 
             // Server
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1311, 617);
+            this.Controls.Add(this.btnExport);
             this.Controls.Add(this.btnSetting);
             this.Controls.Add(this.btnClearLog);
             this.Controls.Add(this.btnStart);
@@ -162,6 +175,7 @@
         private System.Windows.Forms.Button btnStart;
         private System.Windows.Forms.Button btnClearLog;
         private System.Windows.Forms.Button btnSetting;
+        private System.Windows.Forms.Button btnExport;
     }
 }
 
