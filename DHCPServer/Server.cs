@@ -95,7 +95,7 @@ namespace DHCPServer
             {
                 if (Option[i][0] == 54)
                 {
-                    if (network_config.dhcpserver != new IPAddress(new byte[] { Option[i][2], Option[i][3], Option[i][4], Option[i][5] }))
+                    if (!network_config.dhcpserver.Equals(new IPAddress(new byte[] { Option[i][2], Option[i][3], Option[i][4], Option[i][5] })))
                     {
                         return;
                     }
