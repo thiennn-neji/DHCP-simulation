@@ -40,6 +40,7 @@ namespace DHCPClient
             this.lv_Message = new System.Windows.Forms.ListView();
             this.coltype = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.coltime = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.btnExtend = new DHCPClient.RJToggleButton();
             this.SuspendLayout();
             // 
             // btnRenew
@@ -150,11 +151,27 @@ namespace DHCPClient
             this.coltime.Text = "Time";
             this.coltime.Width = 300;
             // 
+            // btnExtend
+            // 
+            this.btnExtend.AutoSize = true;
+            this.btnExtend.Location = new System.Drawing.Point(881, 30);
+            this.btnExtend.MinimumSize = new System.Drawing.Size(75, 35);
+            this.btnExtend.Name = "btnExtend";
+            this.btnExtend.OffBackColor = System.Drawing.Color.Gray;
+            this.btnExtend.OffToggleColor = System.Drawing.Color.Gainsboro;
+            this.btnExtend.OnBackColor = System.Drawing.Color.MediumSlateBlue;
+            this.btnExtend.OnToggleColor = System.Drawing.Color.WhiteSmoke;
+            this.btnExtend.Size = new System.Drawing.Size(75, 35);
+            this.btnExtend.TabIndex = 9;
+            this.btnExtend.UseVisualStyleBackColor = true;
+            this.btnExtend.CheckedChanged += new System.EventHandler(this.btnExtend_CheckedChanged);
+            // 
             // Client
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1262, 556);
+            this.Controls.Add(this.btnExtend);
             this.Controls.Add(this.lv_Message);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.btnExtendIP);
@@ -180,10 +197,10 @@ namespace DHCPClient
         private System.Windows.Forms.RichTextBox rtbPara;
         private System.Windows.Forms.Button btnClearLog;
         private System.Windows.Forms.Button btnExtendIP;
-        private RJToggleButton btnExtend;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.ListView lv_Message;
         private System.Windows.Forms.ColumnHeader coltype;
         private System.Windows.Forms.ColumnHeader coltime;
+        private RJToggleButton btnExtend;
     }
 }

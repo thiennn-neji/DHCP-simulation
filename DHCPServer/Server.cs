@@ -445,7 +445,7 @@ namespace DHCPServer
             // Display dhcp messeage
             //rtbMess.Text += packet.ToText() + "\r\n"; // d.ToText() la ham tra ve mot string tu DHCPPacket
             ListViewItem type = new ListViewItem(DHCPType);
-            lvMessage.Items.Add(type);
+            lv_Message.Items.Add(type);
             ListViewItem.ListViewSubItem time = new ListViewItem.ListViewSubItem(type, DateTime.Now.ToString());
             type.SubItems.Add(time);
         }
@@ -472,7 +472,7 @@ namespace DHCPServer
         private void btnClearLog_Click(object sender, EventArgs e) // clear log button
         {
             //rtb_DHCPMessage.Text = "";
-            lvMessage.Clear();
+            lv_Message.Items.Clear();
             ListPacket.Clear();
         }
 

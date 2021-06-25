@@ -421,7 +421,7 @@ namespace DHCPClient
         private void btnClearLog_Click(object sender, EventArgs e) // Clear log button
         {
             //rtbMess.Text = ""; 
-            lv_Message.Clear();
+            lv_Message.Items.Clear();
             ListPacket.Clear();
         }
 
