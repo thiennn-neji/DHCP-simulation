@@ -18,13 +18,10 @@ namespace DHCPServer
 {
     public partial class DetailPacket : Form
     {
-        public DetailPacket()
-        {
-            InitializeComponent();
-        }
 
         public DetailPacket(DHCPPacket packet)
         {
+            InitializeComponent();
             rtbMessage.Text = packet.ToText();
         }
     }

@@ -34,18 +34,21 @@ namespace DHCPServer
             // 
             // rtbMessage
             // 
-            this.rtbMessage.Location = new System.Drawing.Point(13, 13);
+            this.rtbMessage.Location = new System.Drawing.Point(17, 19);
+            this.rtbMessage.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.rtbMessage.Name = "rtbMessage";
-            this.rtbMessage.Size = new System.Drawing.Size(884, 510);
+            this.rtbMessage.Size = new System.Drawing.Size(967, 609);
             this.rtbMessage.TabIndex = 0;
             this.rtbMessage.Text = "";
             // 
             // DetailPacket
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(10F, 23F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(909, 535);
+            this.ClientSize = new System.Drawing.Size(1000, 647);
             this.Controls.Add(this.rtbMessage);
+            this.Font = new System.Drawing.Font("Segoe Script", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.Name = "DetailPacket";
             this.Text = "DETAIL PACKET";
             this.ResumeLayout(false);

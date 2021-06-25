@@ -464,13 +464,16 @@ namespace DHCPServer
             //Start thread
             Listen_thread.Start();            
             Time_thread.Start();
-            btnStart.Enabled = false;                       
+            btnStart.Enabled = false;
+
+            ListPacket = new List<DHCPPacket>();
         }
 
         private void btnClearLog_Click(object sender, EventArgs e) // clear log button
         {
             //rtb_DHCPMessage.Text = "";
             lvMessage.Clear();
+            ListPacket.Clear();
         }
 
         private void btnSetting_Click(object sender, EventArgs e)

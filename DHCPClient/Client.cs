@@ -68,6 +68,8 @@ namespace DHCPClient
             DHCPServer_IP = new byte[] { 0, 0, 0, 0 }; // Dia chi ip cua server dhcp
 
             offer_saved = new DHCPPacket();
+
+            ListPacket = new List<DHCPPacket>();
         }
 
         IPAddress ip; // Ip hien co cua client
@@ -84,6 +86,7 @@ namespace DHCPClient
         byte[] DHCPServer_IP; // chua dia chi ip cua server
         DHCPPacket offer_saved;
         List<DHCPPacket> ListPacket;
+
         void Auto_Extend() // tu dong gia han ip
         {
             while (true)
@@ -419,6 +422,7 @@ namespace DHCPClient
         {
             //rtbMess.Text = ""; 
             lv_Message.Clear();
+            ListPacket.Clear();
         }
 
         private void btnExtend_CheckedChanged(object sender, EventArgs e)
