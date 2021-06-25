@@ -38,7 +38,9 @@
             this.btnClearLog = new System.Windows.Forms.Button();
             this.btnSetting = new System.Windows.Forms.Button();
             this.btnExport = new System.Windows.Forms.Button();
-            this.rtb_DHCPMessage = new System.Windows.Forms.RichTextBox();
+            this.lvMessage = new System.Windows.Forms.ListView();
+            this.coltype = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.coltime = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.SuspendLayout();
             // 
             // label1
@@ -135,19 +137,37 @@
             this.btnExport.UseVisualStyleBackColor = true;
             this.btnExport.Click += new System.EventHandler(this.btnExport_Click);
             // 
-            // rtb_DHCPMessage
+            // lvMessage
             // 
-            this.rtb_DHCPMessage.Location = new System.Drawing.Point(12, 150);
-            this.rtb_DHCPMessage.Name = "rtb_DHCPMessage";
-            this.rtb_DHCPMessage.Size = new System.Drawing.Size(697, 455);
-            this.rtb_DHCPMessage.TabIndex = 0;
-            this.rtb_DHCPMessage.Text = "";
+            this.lvMessage.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.coltype,
+            this.coltime});
+            this.lvMessage.Font = new System.Drawing.Font("Segoe Script", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lvMessage.HideSelection = false;
+            this.lvMessage.Location = new System.Drawing.Point(13, 150);
+            this.lvMessage.Name = "lvMessage";
+            this.lvMessage.Size = new System.Drawing.Size(710, 455);
+            this.lvMessage.TabIndex = 9;
+            this.lvMessage.UseCompatibleStateImageBehavior = false;
+            this.lvMessage.View = System.Windows.Forms.View.Details;
+            this.lvMessage.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.lvMessage_MouseDoubleClick);
+            // 
+            // coltype
+            // 
+            this.coltype.Text = "Type";
+            this.coltype.Width = 241;
+            // 
+            // coltime
+            // 
+            this.coltime.Text = "Time";
+            this.coltime.Width = 300;
             // 
             // Server
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1311, 617);
+            this.Controls.Add(this.lvMessage);
             this.Controls.Add(this.btnExport);
             this.Controls.Add(this.btnSetting);
             this.Controls.Add(this.btnClearLog);
@@ -155,7 +175,6 @@
             this.Controls.Add(this.lv_IPTable);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
-            this.Controls.Add(this.rtb_DHCPMessage);
             this.Name = "Server";
             this.Text = "Server";
             this.ResumeLayout(false);
@@ -174,7 +193,9 @@
         private System.Windows.Forms.Button btnClearLog;
         private System.Windows.Forms.Button btnSetting;
         private System.Windows.Forms.Button btnExport;
-        private System.Windows.Forms.RichTextBox rtb_DHCPMessage;
+        private System.Windows.Forms.ListView lvMessage;
+        private System.Windows.Forms.ColumnHeader coltype;
+        private System.Windows.Forms.ColumnHeader coltime;
     }
 }
 

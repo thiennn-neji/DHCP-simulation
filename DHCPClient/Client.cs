@@ -83,7 +83,7 @@ namespace DHCPClient
         byte[] MacAddr; // chua mac address
         byte[] DHCPServer_IP; // chua dia chi ip cua server
         DHCPPacket offer_saved;
-
+        List<DHCPPacket> ListPacket;
         void Auto_Extend() // tu dong gia han ip
         {
             while (true)
@@ -124,6 +124,7 @@ namespace DHCPClient
                 Byte[] recvBytes = udpclient.Receive(ref IpEnd);
                 DHCPPacket packet = new DHCPPacket();
                 packet.BytesToDHCPPacket(recvBytes); // chuyen goi tin tu dang byte sang dang DHCPPacket
+                ListPacket.Add(packet);
                 Display_Message(packet); // Hien thi goi len mang hinh
                 HandlePacket(packet); // xu li goi vua nhan
             }
@@ -230,9 +231,60 @@ namespace DHCPClient
         }
 
         void Display_Message(DHCPPacket packet)
-        {
+        {            
+            List<byte[]> Option = packet.optionsplit();
+            string DHCPType = "";
+            for (int i = 0; i < Option.Count(); i++)
+            {
+                if (Option[i][0] == 53)
+                {
+                    if (Option[i][2] == 1)
+                    {
+                        DHCPType = "DHCP Discover";
+                    }
+
+                    if (Option[i][2] == 2)
+                    {
+                        DHCPType = "DHCP Offer";
+                    }
+
+                    if (Option[i][2] == 3)
+                    {
+                        DHCPType = "DHCP Request";
+                    }
+
+                    if (Option[i][2] == 4)
+                    {
+                        DHCPType = "DHCP Decline";
+                    }
+
+                    if (Option[i][2] == 5)
+                    {
+                        DHCPType = "DHCP ACK";
+                    }
+
+                    if (Option[i][2] == 6)
+                    {
+                        DHCPType = "DHCP NACK";
+                    }
+
+                    if (Option[i][2] == 7)
+                    {
+                        DHCPType = "DHCP Release";
+                    }
+
+                    if (Option[i][2] == 8)
+                    {
+                        DHCPType = "DHCP Inform";
+                    }
+                }
+            }
             // Display dhcp messeage
-            rtbMess.Text += packet.ToText() + "\r\n"; // d.ToText() la ham tra ve mot string tu DHCPPacket
+            //rtbMess.Text += packet.ToText() + "\r\n"; // d.ToText() la ham tra ve mot string tu DHCPPacket
+            ListViewItem type = new ListViewItem(DHCPType);
+            lv_Message.Items.Add(type);
+            ListViewItem.ListViewSubItem time = new ListViewItem.ListViewSubItem(type, DateTime.Now.ToString());
+            type.SubItems.Add(time);            
         }
 
         void Display_Parameter() // Ham cap nhat thong tin su dung luon t1
@@ -365,13 +417,27 @@ namespace DHCPClient
 
         private void btnClearLog_Click(object sender, EventArgs e) // Clear log button
         {
-            rtbMess.Text = ""; 
+            //rtbMess.Text = ""; 
+            lv_Message.Clear();
         }
 
         private void btnExtend_CheckedChanged(object sender, EventArgs e)
         {
             autoextend = btnExtend.Checked;
         }
+
+        private void lv_Message_DoubleClick(object sender, MouseEventArgs e)
+        {
+            var senderList = (ListView)sender;
+            var clickedItem = senderList.HitTest(e.Location).Item;
+            if (clickedItem != null)
+            {
+                int index = clickedItem.Index;
+                Form detail = new DetailPacket(ListPacket[index]);
+                detail.Show();
+            }
+        }
+
 
         private void btnExtendIP_Click(object sender, EventArgs e) // Extend button
         {
