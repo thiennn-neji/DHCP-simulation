@@ -140,9 +140,10 @@ namespace DHCPClient
         private void btnRenew_Click(object sender, EventArgs e)
         {
             if (haveip) // Neu ma co ip roi thi phai gui release roi moi gui discover
-            {
+            {                
                 Send_DHCPRelease();
-            }            
+            }
+            DHCPServer_IP = new byte[] { 0, 0, 0, 0 };
             Send_DHCPDiscover(); // gui goi tin dhcp discover
         }
 
@@ -370,7 +371,7 @@ namespace DHCPClient
         void Send_DHCPRequest(DHCPPacket packet, byte[] dhcpserver, int type)
         {
             /*
-             * type = 1: seleting
+             * type = 1: selecting
              * type = 2: renew, bound, rebind
              * type = 3: reboot
              */ 

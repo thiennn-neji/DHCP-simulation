@@ -35,7 +35,7 @@ namespace networkconfignamespace
 
         public byte[] toBytes()
         {
-            byte[] d = new byte[32 + 8 * static_ip.Count];
+            byte[] d = new byte[32 + 10 * static_ip.Count];
             int index = 0;
             index = add(d, index, networkaddress.GetAddressBytes());
             index = add(d, index, subnetmask.GetAddressBytes());

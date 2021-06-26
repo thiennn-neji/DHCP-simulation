@@ -90,16 +90,19 @@ namespace DHCPServer
 
         void HandlePacket(DHCPPacket packet)
         {
+            // Phan biet cac goi tin request co phai selecting hay khong
+            bool flag1 = false;
             // Xu li goi tin dhcp
             List<byte[]> Option = packet.optionsplit();
             for (int i = 0; i < Option.Count(); i++) // dhcp server identify khi goi request_new hoac release
             {
                 if (Option[i][0] == 54)
-                {
+                {                    
                     if (!network_config.dhcpserver.Equals(new IPAddress(new byte[] { Option[i][2], Option[i][3], Option[i][4], Option[i][5] })))
-                    {
+                    {                        
                         return;
                     }
+                    flag1 = true; // Neu la goi tin request thi se o trang thai selecting
                     break;
                 }
             }
@@ -161,6 +164,8 @@ namespace DHCPServer
                         Int64 epoch = (int)(DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalSeconds; // setup item
                         item.time = epoch + network_config.leasetime;
 
+                        bool flag2 = false;
+
                         for (int j = 0; j < table.Count(); j++)
                         {
                             if (table[j].ip == item.ip)
@@ -168,6 +173,7 @@ namespace DHCPServer
                                 if (table[j].macaddress == item.macaddress) // goi tin dang xin gia han
                                 {
                                     table.RemoveAt(j); // xoa goi cu
+                                    flag2 = true;
                                 } else
                                 {
                                     Send_DHCPNak(packet);
@@ -175,8 +181,11 @@ namespace DHCPServer
                                 }
                             }
                         }
-                        table.Add(item); // add goi moi vo
-                        Send_DHCPAck(packet, IP); // send goi ack
+                        if (flag1 || flag2) // La goi tin dhcp request seleting thi xac nhan, neu la cac goi tin renew, reboot thi phai co san IP trong bang
+                        {
+                            table.Add(item); // add goi moi vo
+                            Send_DHCPAck(packet, IP); // send goi ack
+                        }                        
                     }
                     else // goi dhcp release
                     {
@@ -504,6 +513,13 @@ namespace DHCPServer
             for (int i = 0; i < table.Count; i++)
             {
                 if (z == table[i].ip)
+                {
+                    return true;
+                }
+            }
+            for (int i = 0; i < network_config.static_ip.Count; i++)
+            {
+                if (d == network_config.static_ip[i].ip)
                 {
                     return true;
                 }
