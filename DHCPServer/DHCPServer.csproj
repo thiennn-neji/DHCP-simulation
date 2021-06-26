@@ -46,6 +46,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AddStaticIP.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AddStaticIP.Designer.cs">
+      <DependentUpon>AddStaticIP.cs</DependentUpon>
+    </Compile>
     <Compile Include="DetailPacket.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -66,6 +72,9 @@
     <Compile Include="Setting.Designer.cs">
       <DependentUpon>Setting.cs</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="AddStaticIP.resx">
+      <DependentUpon>AddStaticIP.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="DetailPacket.resx">
       <DependentUpon>DetailPacket.cs</DependentUpon>
     </EmbeddedResource>
