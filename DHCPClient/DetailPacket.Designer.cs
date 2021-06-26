@@ -34,6 +34,7 @@ namespace DHCPClient
             // 
             // rtbMessage
             // 
+            this.rtbMessage.Font = new System.Drawing.Font("Times New Roman", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.rtbMessage.Location = new System.Drawing.Point(17, 19);
             this.rtbMessage.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.rtbMessage.Name = "rtbMessage";

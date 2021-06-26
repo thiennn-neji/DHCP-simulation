@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -152,6 +153,7 @@ namespace DHCPPacketNamespace
 			this.chaddr = new byte[16];
 			this.sname = new byte[64];
 			this.file = new byte[128];
+
 		}
 
 		public bool BytesToDHCPPacket(byte[] data)
@@ -244,23 +246,79 @@ namespace DHCPPacketNamespace
 		{
 			string text = "";
 			// Chuyen sang text de hien thi
-			text += "op(1): " + op.ToString("X") + " htype(1): " + htype.ToString("X") + " hlen(1): " +hlen.ToString("X") + " hops(1): " + hops.ToString("X") + "\r\n";
-			text += "xid(4): " + ByteArrayToString(xid) + "\r\n";
-			text += "secs(2): " + ByteArrayToString(secs) + "\r\n";
-			text += "flags(2): " + ByteArrayToString(flags) + "\r\n";
-			text += "ciaddr(4): " + ByteArrayToString(ciaddr) + "\r\n";
-			text += "yiaddr(4): " + ByteArrayToString(yiaddr) + "\r\n";
-			text += "siaddr(4): " + ByteArrayToString(siaddr) + "\r\n";
-			text += "giaddr(4): " + ByteArrayToString(giaddr) + "\r\n";
-			text += "chaddr(16): " + ByteArrayToString(chaddr) + "\r\n";
-			text += "sname(64): " + ByteArrayToString(sname) + "\r\n";
-			text += "file(128): " + ByteArrayToString(file) + "\r\n";
-			text += "options(): " + ByteArrayToString(new byte[] { options[0], options[1], options[2], options[3] }) + "\r\n";
-			List<byte[]> g = this.optionsplit();
-			for (int i = 0; i < g.Count(); i++)
+			text += "Message Type: ";
+			if (op == 1)
             {
-				text += ByteArrayToString(g[i]) + "\r\n";
+				text += "Boot Request (1)\n";
             }
+			else
+            {
+				text += "Boot Reply (2)\n";
+			}
+			text += "Hardware type: " + getHardwareType(htype) + " (0x" + htype.ToString("x2") + ")\n";
+			text += "Hardware address length: " + hlen + "\n";
+			text += "Hops: " + hops + "\n";
+			text += "Transaction ID: 0x" + ByteArrayToString(xid) + "\n";
+			text += "Seconds elapsed: 0x" + ByteArrayToString(secs) + "\n";
+			text += "Bootp flags: 0x" + ByteArrayToString(flags) + "\n";
+			text += "Client IP Address: " + (new IPAddress(ciaddr).ToString()) + "\n";
+			text += "Your (client) IP Address: " + (new IPAddress(yiaddr).ToString()) + "\n";
+			text += "Next server IP Address: " + (new IPAddress(siaddr).ToString()) + "\n";
+			text += "Realy agent IP Address: " + (new IPAddress(giaddr).ToString()) + "\n";
+			text += "Client MAC address: " + displaymac(chaddr) + "\n";
+			text += "Server host name not given\n";
+			text += "Boot file name not given\n";
+			text += "Magic cookie: DHCP\n";
+
+			List<byte[]> options = optionsplit();
+			for (int i = 0; i < options.Count; i++)
+            {
+				text += "Option: (" + options[i][0] + ") " + getDHCPOption(options[i][0]) + "\n";
+				if (options[i][0] == 255)
+                {
+					break;
+                }
+				text += "\tLength: " + options[i][1] + "\n\t";
+				switch (options[i][0])
+                {
+					case 1:
+						text += getDHCPOption(options[i][0]) + ": " + (new IPAddress(new byte[] { options[i][2], options[i][3], options[i][4], options[i][5] }).ToString()) + "\n";
+						break;
+					case 3:
+						text += getDHCPOption(options[i][0]) + ": " + (new IPAddress(new byte[] { options[i][2], options[i][3], options[i][4], options[i][5] }).ToString()) + "\n";
+						break;
+					case 6:
+						text += getDHCPOption(options[i][0]) + ": " + (new IPAddress(new byte[] { options[i][2], options[i][3], options[i][4], options[i][5] }).ToString()) + "\n";
+						break;
+					case 50:
+						text += getDHCPOption(options[i][0]) + ": " + (new IPAddress(new byte[] { options[i][2], options[i][3], options[i][4], options[i][5] }).ToString()) + "\n";
+						break;
+					case 51:
+						text += getDHCPOption(options[i][0]) + ": " + BitConverter.ToInt32(new byte[] { options[i][2], options[i][3], options[i][4], options[i][5] }, 0) + "s\n";
+						break;
+					case 53:
+						text += getDHCPOption(options[i][0]) + ": " + getDHCPMessageType(options[i][2]) + " (" + options[i][2] + ")\n";
+						break;
+					case 54:
+						text += getDHCPOption(options[i][0]) + ": " + (new IPAddress(new byte[] { options[i][2], options[i][3], options[i][4], options[i][5] }).ToString()) + "\n";
+						break;
+					case 55:
+						for (int j = 2; j < options[i].Length; j++)
+                        {
+							text += getDHCPOption(options[i][0]) + " Item: (" + options[i][j] + ") " + getDHCPOption(options[i][j]) + "\n\t";
+						}
+						break;
+					default:
+						text += "Value: 0x";
+						for (int j = 2; j < options[i].Length; j++)
+                        {
+							text += options[i][j].ToString("2x");
+						}
+						text += "\n";
+						break;
+                }
+			}
+
 			return text;
 		}
 
@@ -284,6 +342,45 @@ namespace DHCPPacketNamespace
             }
 			return ret;
         }
+
+		public string getHardwareType(byte b)
+		{
+			string[] type = new string[] { "", "Ethernet (10Mb)", "Experimental Ethernet (3Mb)", "Amateur Radio AX.25", "Proteon ProNET Token Ring", "Chaos", "IEEE 802 Networks", "ARCNET", "Hyperchannel", "Lanstar", "Autonet Short Address", "LocalTalk", "LocalNet (IBM PCNet or SYTEK LocalNET)" };
+			return type[(int)b];
+		}
+
+		public string getHardwareAddLength(byte b)
+		{
+			string[] type = new string[] { "", "Ethernet", "Experimental", "Amateur", "Proteon", "Chaos", "IEEE", "ARCNET", "Hyperchannel", "Lanstar", "Autonet", "LocalTalk", "LocalNet" };
+			return type[(int)b];
+		}
+
+		public string getDHCPOption(byte b)
+		{
+			string[] type = new string[] { "", "SubnetMask", "TimeOffset", "Router", "TimeServer", "NameServer", "DomainNameServer", "LogServer", "CookieServer", "LPRServer", "ImpressServer", "ResourceLocServer", "HostName", "BootFileSize", "MeritDump", "DomainName", "SwapServer", "RootPath", "ExtensionsPath", "IpForwarding", "NonLocalSourceRouting", "PolicyFilter", "MaximumDatagramReAssemblySize", "DefaultIPTimeToLive", "PathMTUAgingTimeout", "PathMTUPlateauTable", "InterfaceMTU", "AllSubnetsAreLocal", "BroadcastAddress", "PerformMaskDiscovery", "MaskSupplier", "PerformRouterDiscovery", "RouterSolicitationAddress", "StaticRoute", "TrailerEncapsulation", "ARPCacheTimeout", "EthernetEncapsulation", "TCPDefaultTTL", "TCPKeepaliveInterval", "TCPKeepaliveGarbage", "NetworkInformationServiceDomain", "NetworkInformationServers", "NetworkTimeProtocolServers", "VendorSpecificInformation", "NetBIOSoverTCPIPNameServer", "NetBIOSoverTCPIPDatagramDistributionServer", "NetBIOSoverTCPIPNodeType", "NetBIOSoverTCPIPScope", "XWindowSystemFontServer", "XWindowSystemDisplayManager", "RequestedIPAddress", "IPAddressLeaseTime", "OptionOverload", "DHCPMessageTYPE", "ServerIdentifier", "ParameterRequestList", "Message", "MaximumDHCPMessageSize", "RenewalTimeValue_T1", "RebindingTimeValue_T2", "Vendorclassidentifier", "ClientIdentifier", "NetworkInformationServicePlusDomain", "NetworkInformationServicePlusServers", "TFTPServerName", "BootfileName", "MobileIPHomeAgent", "SMTPServer", "POP3Server", "NNTPServer", "DefaultWWWServer", "DefaultFingerServer", "DefaultIRCServer", "StreetTalkServer", "STDAServer", "END_Option" };
+			return type[(int)b];
+		}
+
+		public string getDHCPMessageType(byte b)
+		{
+			string[] type = new string[] { "", "DHCPDISCOVER", "DHCPOFFER", "DHCPREQUEST", "DHCPDECLINE", "DHCPACK", "DHCPNAK", "DHCPRELEASE", "DHCPINFORM" };
+			return type[(int)b];
+		}
+
+		public string displaymac(byte[] b)
+		{
+			string z = "";
+			for (int i = 0; i < 6; i++)
+			{
+				z += b[i].ToString("x2");
+				if (i < 6)
+				{
+					z += ":";
+				}
+			}
+			return z;
+		}
+
 	}
 
 	public enum ARPparamEnums
@@ -477,6 +574,5 @@ namespace DHCPPacketNamespace
             }
         }
 
-    }
-	
+    }	
 }
