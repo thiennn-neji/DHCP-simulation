@@ -17,10 +17,33 @@ namespace DHCPServer
 {
     public partial class Setting : Form
     {
-        public Setting()
+        public Setting(networkconfig n)
         {
             InitializeComponent();
+
+            tb_NetworkAddress.Text = n.networkaddress.ToString();
+            tb_SubnetMask.Text = n.subnetmask.ToString();
+            tb_DNS.Text = n.dns.ToString();
+            tb_DefaultGateway.Text = n.defaultgateway.ToString();
+            tb_DHCPServerIP.Text = n.dhcpserver.ToString();
+            tb_IPStart.Text = n.start.ToString();
+            tb_IPEnd.Text = n.end.ToString();
+            tb_LeaseTime.Text = n.leasetime.ToString();
+
             staticips = new List<staticip>();
+
+            for (int i = 0; i < n.static_ip.Count; i++)
+            {
+                staticip s = new staticip();
+                s.ip = n.static_ip[i].ip;
+                for (int j = 0; j < 6; j++)
+                {
+                    s.mac[j] = n.static_ip[i].mac[j];
+                }
+                ListViewItem o = new ListViewItem(displaymac(s.mac));
+                o.SubItems.Add(s.ip.ToString());
+                lv_StaticIP.Items.Add(o);
+            }
         }       
 
         public bool isset { get; set; }

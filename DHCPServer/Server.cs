@@ -453,7 +453,7 @@ namespace DHCPServer
 
         private void btnSetting_Click(object sender, EventArgs e)
         {
-            Setting f = new Setting();
+            Setting f = new Setting(network_config);
             f.ShowDialog();
             if (f.isset)
             {
