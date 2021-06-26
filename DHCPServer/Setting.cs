@@ -20,10 +20,13 @@ namespace DHCPServer
         public Setting()
         {
             InitializeComponent();
+            staticips = new List<staticip>();
         }       
 
         public bool isset { get; set; }
         public networkconfig network_config { get; set; }
+
+        List<staticip> staticips;
 
         private void btnSetDefault_Click(object sender, EventArgs e)
         {
@@ -56,10 +59,9 @@ namespace DHCPServer
                 MessageBox.Show(ex.Message);
                 return;
             }            
-            if (!checkvalid())
+            if (!checkvalidnetwork())
             {
                 network_config = new networkconfig();
-                MessageBox.Show("Network config not valid");
                 return;
             }
             isset = true;
@@ -71,22 +73,18 @@ namespace DHCPServer
             try
             {
                 network_config = new networkconfig();
+
                 network_config.networkaddress = IPAddress.Parse(tb_NetworkAddress.Text.Trim());
                 network_config.subnetmask = IPAddress.Parse(tb_SubnetMask.Text.Trim());
                 network_config.dns = IPAddress.Parse(tb_DNS.Text.Trim());
+                network_config.defaultgateway = IPAddress.Parse(tb_DefaultGateway.Text.Trim());
                 network_config.dhcpserver = IPAddress.Parse(tb_DHCPServerIP.Text.Trim());
                 network_config.start = IPAddress.Parse(tb_IPStart.Text.Trim());
                 network_config.end = IPAddress.Parse(tb_IPEnd.Text.Trim());
                 network_config.leasetime = Int32.Parse(tb_LeaseTime.Text.Trim());
-                for (int i = 0; i < lv_StaticIP.Items.Count; i++)
+                for (int i = 0; i < staticips.Count; i++)
                 {
-                    staticip d = new staticip();
-                    d.ip = IPAddress.Parse(lv_StaticIP.Items[i].SubItems[1].Text);
-                    for (int j = 0; j < 6; j++)
-                    {
-                        d.mac[j] = (byte)Convert.ToInt32(lv_StaticIP.Items[i].SubItems[0].Text.Substring(j * 3, 2), 16);
-                    }
-                    network_config.static_ip.Add(d);
+                    network_config.static_ip.Add(staticips[i]);
                 }
             } catch (Exception z)
             {
@@ -94,10 +92,9 @@ namespace DHCPServer
                return;
             }
             
-            if (!checkvalid())
+            if (!checkvalidnetwork())
             {
                 network_config = new networkconfig();
-                MessageBox.Show("Network config not valid");
                 return;
             }
             isset = true;
@@ -112,10 +109,23 @@ namespace DHCPServer
 
         bool checksamesubnet(IPAddress network, IPAddress subnet, IPAddress ip)
         {
+            return ((convert(ip) & convert(subnet)) == convert(network));
+        }
+
+        bool checkvalidIP(IPAddress network, IPAddress subnet, IPAddress ip)
+        {
+            if (!checksamesubnet(network, subnet, ip)) // check same subnet
+            {
+                return false;
+            }
+            if ((convert(ip) == convert(network)) || (convert(ip) == (convert(network) | convert(IPAddress.Parse("255.255.255.255"))))) // check if network address or broadcast address
+            {
+                return false;
+            }
             return true;
         }
 
-        bool checkvalid()
+        bool checkvalidnetwork()
         {
             // check subnetmask (cac bit 1 tu trai sang phai)
             {
@@ -134,6 +144,7 @@ namespace DHCPServer
                         {
                             if (!flag)
                             {
+                                MessageBox.Show("Subnetmask not valid");
                                 return false;
                             }
                         }
@@ -149,17 +160,54 @@ namespace DHCPServer
                 // check valid with subnetmask
                 if ((convert(network_config.networkaddress) & convert(network_config.subnetmask)) != convert(network_config.networkaddress))
                 {
+                    MessageBox.Show("Network address not fix with subnetmask");
                     return false;
                 }
                 // check is private IP and not loopback
                 byte[] networkaddress = network_config.networkaddress.GetAddressBytes();
                 if (networkaddress[0] == 127) // loopback
                 {
+                    MessageBox.Show("Network address is loopback");
                     return false;
                 }
             }
-
-
+            // Check default gateway
+            if (!checkvalidIP(network_config.networkaddress, network_config.subnetmask, network_config.defaultgateway))
+            {
+                MessageBox.Show("Default gateway must be a valid IP in network address subnet");
+                return false;
+            }
+            // Check IP start
+            if (!checkvalidIP(network_config.networkaddress, network_config.subnetmask, network_config.start))
+            {
+                MessageBox.Show("IP Start must be a valid IP in network address subnet");
+                return false;
+            }
+            // Check IP end
+            if (!checkvalidIP(network_config.networkaddress, network_config.subnetmask, network_config.end))
+            {
+                MessageBox.Show("IP End must be a valid IP in network address subnet");
+                return false;
+            }
+            if (convert(network_config.end) < convert(network_config.start))
+            {
+                MessageBox.Show("IP Range not valid");
+                return false;
+            }
+            // Check DHCP Server IP
+            if (!checkvalidIP(network_config.networkaddress, network_config.subnetmask, network_config.dhcpserver))
+            {
+                MessageBox.Show("DHCP Server IP must be a valid IP in network address subnet");
+                return false;
+            }
+            for (int i = 0; i < network_config.static_ip.Count; i++)
+            {
+                if (!checkvalidIP(network_config.networkaddress, network_config.subnetmask, network_config.static_ip[i].ip))
+                {
+                    MessageBox.Show("Static IP must be a valid IP in network address subnet");
+                    return false;
+                }
+            }
             return true;
         }
 
@@ -171,19 +219,19 @@ namespace DHCPServer
             {
                 IPAddress g = f.ip;
                 byte[] d = f.mac;
-                for (int i = 0; i < network_config.static_ip.Count; i++)
+                for (int i = 0; i < staticips.Count; i++)
                 {
-                    if (g == network_config.static_ip[i].ip)
+                    if (g == staticips[i].ip)
                     {
                         MessageBox.Show("Static IP already used");
                         return;
                     }
-                    if (d[0] == network_config.static_ip[i].mac[0])
+                    if (d[0] == staticips[i].mac[0])
                     {
                         bool flag = true;
                         for (int j = 1; j < 6; j++)
                         {                            
-                            if (d[j] != network_config.static_ip[i].mac[j])
+                            if (d[j] != staticips[i].mac[j])
                             {
                                 flag = false;
                                 break;
@@ -202,8 +250,31 @@ namespace DHCPServer
                 {
                     s.mac[i] = d[i];
                 }
-                network_config.static_ip.Add(s);
+                staticips.Add(s);
+                ListViewItem o = new ListViewItem(displaymac(s.mac));
+                o.SubItems.Add(s.ip.ToString());
+                lv_StaticIP.Items.Add(o);
             }            
+        }
+
+        string displaymac(byte[] b)
+        {
+            string z = "";
+            for (int i = 0; i < 6; i++)
+            {
+                z += b[i].ToString("x2");
+                if (i < 6)
+                {
+                    z += ":";
+                }
+            }
+            return z;
+        }
+
+        private void btnClearStaticIP_Click(object sender, EventArgs e)
+        {
+            lv_StaticIP.Items.Clear();
+            staticips.Clear();
         }
     }
 }

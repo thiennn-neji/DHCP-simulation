@@ -47,12 +47,13 @@ namespace DHCPServer
             this.lb_IPStart = new System.Windows.Forms.Label();
             this.lb_IPEnd = new System.Windows.Forms.Label();
             this.lv_StaticIP = new System.Windows.Forms.ListView();
-            this.label8 = new System.Windows.Forms.Label();
-            this.btnAddStaticIP = new System.Windows.Forms.Button();
             this.MacAddr = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.IP = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.label8 = new System.Windows.Forms.Label();
+            this.btnAddStaticIP = new System.Windows.Forms.Button();
             this.tb_LeaseTime = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
+            this.btnClearStaticIP = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // btnSetConfig
@@ -228,6 +229,16 @@ namespace DHCPServer
             this.lv_StaticIP.UseCompatibleStateImageBehavior = false;
             this.lv_StaticIP.View = System.Windows.Forms.View.Details;
             // 
+            // MacAddr
+            // 
+            this.MacAddr.Text = "MacAddr";
+            this.MacAddr.Width = 134;
+            // 
+            // IP
+            // 
+            this.IP.Text = "IP";
+            this.IP.Width = 118;
+            // 
             // label8
             // 
             this.label8.AutoSize = true;
@@ -241,23 +252,13 @@ namespace DHCPServer
             // btnAddStaticIP
             // 
             this.btnAddStaticIP.Font = new System.Drawing.Font("Segoe Script", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnAddStaticIP.Location = new System.Drawing.Point(570, 313);
+            this.btnAddStaticIP.Location = new System.Drawing.Point(484, 310);
             this.btnAddStaticIP.Name = "btnAddStaticIP";
-            this.btnAddStaticIP.Size = new System.Drawing.Size(168, 41);
+            this.btnAddStaticIP.Size = new System.Drawing.Size(146, 41);
             this.btnAddStaticIP.TabIndex = 19;
             this.btnAddStaticIP.Text = "Add";
             this.btnAddStaticIP.UseVisualStyleBackColor = true;
             this.btnAddStaticIP.Click += new System.EventHandler(this.btnAddStaticIP_Click);
-            // 
-            // MacAddr
-            // 
-            this.MacAddr.Text = "MacAddr";
-            this.MacAddr.Width = 134;
-            // 
-            // IP
-            // 
-            this.IP.Text = "IP";
-            this.IP.Width = 118;
             // 
             // tb_LeaseTime
             // 
@@ -277,11 +278,23 @@ namespace DHCPServer
             this.label3.TabIndex = 21;
             this.label3.Text = "Lease Time";
             // 
+            // btnClearStaticIP
+            // 
+            this.btnClearStaticIP.Font = new System.Drawing.Font("Segoe Script", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnClearStaticIP.Location = new System.Drawing.Point(647, 310);
+            this.btnClearStaticIP.Name = "btnClearStaticIP";
+            this.btnClearStaticIP.Size = new System.Drawing.Size(146, 41);
+            this.btnClearStaticIP.TabIndex = 22;
+            this.btnClearStaticIP.Text = "Clear";
+            this.btnClearStaticIP.UseVisualStyleBackColor = true;
+            this.btnClearStaticIP.Click += new System.EventHandler(this.btnClearStaticIP_Click);
+            // 
             // Setting
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.btnClearStaticIP);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.tb_LeaseTime);
             this.Controls.Add(this.btnAddStaticIP);
@@ -337,5 +350,6 @@ namespace DHCPServer
         private System.Windows.Forms.ColumnHeader IP;
         private System.Windows.Forms.TextBox tb_LeaseTime;
         private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Button btnClearStaticIP;
     }
 }

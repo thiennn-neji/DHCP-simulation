@@ -526,5 +526,11 @@ namespace DHCPServer
             udpclient.Send(send, send.Length, ipend);
         }
 
+        IPAddress allocate()
+        {
+            IPAddress d = IPAddress.Parse("0.0.0.0");
+
+            return d;
+        }
     }
 }
