@@ -124,47 +124,13 @@ namespace DHCPServer
                             }
                         }
 
-                        int loop = 20;
-                        while (loop >= 0)
+                        IPAddress IP = allocate();
+                        if (IP.Equals(IPAddress.Parse("0.0.0.0"))) // if out of IP
                         {
-                            Random _random = new Random();
-                            int last = (byte)_random.Next(2, 254);
-                            loop--;
-                            IPAddress IP = new IPAddress(new byte[] { 192, 168, 1, (byte)last });
-                            bool flag = true;
-                            for (int z = 0; z < table.Count(); z++)
-                            {
-                                if (IP.ToString() == table[z].ip)
-                                {
-                                    flag = false;
-                                    break;
-                                }
-                            }
-                            if (flag)
-                            {
-                                Send_DHCPOffer(packet, IP);
-                                return;
-                            }
-                        } 
-                        
-                        for (int j = 2; j <= 254; j++) // Kiem tra tung dia chi ip
-                        {
-                            IPAddress IP = new IPAddress(new byte[] { 192, 168, 1, (byte)j });
-                            bool flag = true;
-                            for (int z = 0; z < table.Count(); z++)
-                            {
-                                if (IP.ToString() == table[z].ip)
-                                {
-                                    flag = false;
-                                    break;
-                                }
-                            }
-                            if (flag)
-                            {
-                                Send_DHCPOffer(packet, IP);
-                                return;
-                            }
+                            return;
                         }
+                        Send_DHCPOffer(packet, IP);                        
+                        
                     }
                     else if (Option[i][2] == 3) // Xac dinh dhcp request
                     {
@@ -526,11 +492,53 @@ namespace DHCPServer
             udpclient.Send(send, send.Length, ipend);
         }
 
+        uint convert(IPAddress i)
+        {
+            byte[] d = i.GetAddressBytes().Reverse().ToArray();
+            return BitConverter.ToUInt32(d, 0);
+        }
+
+        bool isexist(IPAddress d)
+        {
+            string z = d.ToString();
+            for (int i = 0; i < table.Count; i++)
+            {
+                if (z == table[i].ip)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         IPAddress allocate()
         {
-            IPAddress d = IPAddress.Parse("0.0.0.0");
-
-            return d;
+            IPAddress IP = IPAddress.Parse("0.0.0.0");
+            uint start = convert(network_config.start);
+            uint end = convert(network_config.end);
+            uint range = end - start + 1;
+            int loop = (int)(range / 4);
+            while (loop > 0) // Random and check IP
+            {
+                Random _random = new Random();
+                int t = _random.Next(0, (int)range) + (int)start;
+                IP = new IPAddress(new byte[] { (byte)(t >> 24), (byte)(t >> 16), (byte)(t >> 8), (byte)(t) });
+                if (!isexist(IP))
+                {
+                    return IP;
+                }
+                loop--;
+            }
+            for (int i = 0; i < range; i++) // Stop random and allocate first IP valid
+            {
+                int t = i + (int)start;
+                IP = new IPAddress(new byte[] { (byte)(t >> 24), (byte)(t >> 16), (byte)(t >> 8), (byte)(t) });
+                if (!isexist(IP))
+                {
+                    return IP;
+                }
+            }
+            return IP;
         }
     }
 }
