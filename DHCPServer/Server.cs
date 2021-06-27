@@ -35,6 +35,7 @@ namespace DHCPServer
         Thread Time_thread, Listen_thread; // luong t su dung cho viec nhan goi dhcp, t1 su dung cho viec hien thi
         List<DHCPPacket> ListPacket;
         networkconfig network_config = new networkconfig();
+        HashSet<byte[]> xid; // Cac  xid dang giao tiep        
 
         void Listening()
         {
@@ -112,6 +113,8 @@ namespace DHCPServer
                 {
                     if (Option[i][2] == 1) // xac dinh dhcp discover
                     {
+                        xid.Add(packet.xid);
+
                         byte[] b_MacAddress = new byte[packet.hlen];
                         for (int j = 0; j < packet.hlen; j++)
                         {
@@ -137,6 +140,11 @@ namespace DHCPServer
                     }
                     else if (Option[i][2] == 3) // Xac dinh dhcp request
                     {
+                        byte[] p = new byte[6];
+                        if (!xid.TryGetValue(packet.xid, out p)) // neu xid khong thuoc cac xid dang giap tiep
+                        {
+                            return;
+                        }
                         IPAddress IP;
                         IP = new IPAddress(packet.ciaddr); // request o dang rebound, ip -> ciaddr
                         if (packet.ciaddr.SequenceEqual(new byte[] { 0, 0, 0, 0 })) // chua co ip -> dhcp dang o dang new
@@ -442,6 +450,8 @@ namespace DHCPServer
             btnStart.Enabled = false;
 
             ListPacket = new List<DHCPPacket>();
+
+            xid = new HashSet<byte[]>();
         }
 
         private void btnClearLog_Click(object sender, EventArgs e) // clear log button
