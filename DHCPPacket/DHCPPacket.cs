@@ -274,10 +274,6 @@ namespace DHCPPacketNamespace
 			for (int i = 0; i < options.Count; i++)
             {
 				text += "Option: (" + options[i][0] + ") " + getDHCPOption(options[i][0]) + "\n";
-				if (options[i][0] == 255)
-                {
-					break;
-                }
 				text += "\tLength: " + options[i][1] + "\n\t";
 				switch (options[i][0])
                 {
@@ -318,7 +314,7 @@ namespace DHCPPacketNamespace
 						break;
                 }
 			}
-
+			text += "Option: (255) End\n";
 			return text;
 		}
 
