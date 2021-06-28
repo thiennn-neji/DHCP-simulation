@@ -71,7 +71,7 @@ namespace DHCPClient
 
             ListPacket = new List<DHCPPacket>();
 
-            xid = new HashSet<byte[]>();
+            xid = new HashSet<string>();
         }
 
         IPAddress ip; // Ip hien co cua client
@@ -88,7 +88,7 @@ namespace DHCPClient
         byte[] DHCPServer_IP; // chua dia chi ip cua server
         DHCPPacket offer_saved; // luu lai goi offer gan nhat
         List<DHCPPacket> ListPacket; // chua cac packet
-        HashSet<byte[]> xid; // Chua cac xid dang trao doi
+        HashSet<string> xid; // Chua cac xid dang trao doi
 
         void Auto_Extend() // tu dong gia han ip
         {
@@ -154,8 +154,9 @@ namespace DHCPClient
         {
             // Xu li khi nhan goi DHCP tu server
             byte[] p = new byte[6];
-            if (!xid.TryGetValue(packet.xid, out p)) // neu xid khong thuoc cac xid da gui
-            {
+            bool d = xid.Contains(ByteArrayToString(packet.xid));
+            if (!d) // neu xid khong thuoc cac xid da gui
+            {    
                 return;
             }
             List<byte[]> Option = packet.optionsplit();
@@ -355,7 +356,7 @@ namespace DHCPClient
             packet.xid[2] = (byte)_random.Next(0, 255);
             packet.xid[3] = (byte)_random.Next(0, 255);
 
-            xid.Add(packet.xid);
+            xid.Add(ByteArrayToString(packet.xid));
 
             for (int i = 0; i < MacAddr.Length; i++)
             {
@@ -397,7 +398,7 @@ namespace DHCPClient
                 n_packet.xid[i] = packet.xid[i];
             }
 
-            xid.Add(packet.xid);
+            xid.Add(ByteArrayToString(packet.xid));
 
             if (type == 2)
             {
