@@ -74,14 +74,14 @@ namespace networkconfignamespace
             start = new IPAddress(rdr.ReadBytes(4));
             end = new IPAddress(rdr.ReadBytes(4));
             static_ip = new List<staticip>();
-            for (int i = 7 * 4; i + 14 < data.Length; i += 10)
+            for (int i = 7 * 4; i + 10 < data.Length; i += 10)
             {
                 staticip d = new staticip();
                 d.mac = rdr.ReadBytes(6);
                 d.ip = new IPAddress(rdr.ReadBytes(4));
                 static_ip.Add(d);
             }
-            leasetime = BitConverter.ToInt32(new byte[] { rdr.ReadByte(), rdr.ReadByte(), rdr.ReadByte(), rdr.ReadByte() }, 0);
+            leasetime = BitConverter.ToInt32(rdr.ReadBytes(4), 0);
         }
     }
     public class staticip
