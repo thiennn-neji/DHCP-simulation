@@ -529,7 +529,7 @@ namespace DHCPServer
             }
             for (int i = 0; i < network_config.static_ip.Count; i++)
             {
-                if (d == network_config.static_ip[i].ip)
+                if (z == network_config.static_ip[i].ip.ToString())
                 {
                     return true;
                 }

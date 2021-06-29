@@ -161,7 +161,7 @@ namespace DHCPServer
                         continue;
                     }
                     byte b = subnetmask[i];
-                    for (int j = 0; j < 8; j++)
+                    for (int j = 7; j >= 0; j--)
                     {
                         if (((b & (1 << j)) >> j) == 1) // lay bit thu j tu trai sang
                         {
@@ -244,7 +244,7 @@ namespace DHCPServer
                 byte[] d = f.mac;
                 for (int i = 0; i < staticips.Count; i++)
                 {
-                    if (g == staticips[i].ip)
+                    if (g.ToString() == staticips[i].ip.ToString())
                     {
                         MessageBox.Show("Static IP already used");
                         return;
@@ -252,7 +252,7 @@ namespace DHCPServer
                     if (d[0] == staticips[i].mac[0])
                     {
                         bool flag = true;
-                        for (int j = 1; j < 6; j++)
+                        for (int j = 0; j < 6; j++)
                         {                            
                             if (d[j] != staticips[i].mac[j])
                             {

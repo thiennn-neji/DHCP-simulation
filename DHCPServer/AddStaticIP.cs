@@ -45,10 +45,18 @@ namespace DHCPServer
                 MessageBox.Show("Mac addr not valid");
                 return;
             }
-            for (int i = 0; i < 6; i++)
+            try
             {
-                mac[i] = (byte)Convert.ToInt32(f[i], 16);
+                for (int i = 0; i < 6; i++)
+                {
+                    mac[i] = (byte)Convert.ToInt32(f[i], 16);
+                }
+            } catch (Exception z)
+            {
+                MessageBox.Show(z.Message);
+                return;
             }
+            
             ok = true;
             this.Close();
         }
